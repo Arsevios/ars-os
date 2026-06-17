@@ -1,0 +1,120 @@
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #a0a0b0;
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.goalCard {
+  background: #1e1e2e;
+  border: 1px solid #2e2e3e;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.goalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.goalHeader h3 {
+  margin: 0;
+  color: #fff;
+  text-transform: capitalize;
+  font-size: 1.1rem;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #ff5c5c;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.field {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 0.8rem;
+  color: #8888a0;
+  margin-bottom: 4px;
+}
+
+.field input {
+  background: #2a2a3c;
+  border: 1px solid #3a3a4c;
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #5b5fe3;
+}
+
+.addCard {
+  background: #1e1e2e;
+  border: 1px solid #2e2e3e;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.addCard h3 {
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.addForm {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.addForm input {
+  background: #2a2a3c;
+  border: 1px solid #3a3a4c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  min-width: 120px;
+  flex: 1;
+}
+
+.addForm button {
+  background: #5b5fe3;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.addForm button:hover {
+  background: #6c6fef;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useAppStore, DayTask, Pomodoro } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import type { DayTask, Pomodoro } from "../../store/appStore";
 import styles from "./DashboardPage.module.css";
 
 function formatTime(seconds: number) {

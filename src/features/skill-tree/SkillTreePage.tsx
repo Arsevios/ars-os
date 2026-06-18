@@ -1,4 +1,5 @@
-import { useAppStore, Skill } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import type { Skill } from "../../store/appStore";
 import styles from "./SkillTreePage.module.css";
 
 const TREE_STRUCTURE = [
@@ -21,7 +22,9 @@ const TREE_STRUCTURE = [
 
 export default function SkillTreePage() {
   const { skills, name, level, totalXP } = useAppStore();
-  const skillMap = Object.fromEntries(skills.map((s) => [s.id, s]));
+  const skillMap = Object.fromEntries(
+  skills.map((s: Skill) => [s.id, s])
+);
 
   return (
     <div className={styles.page}>

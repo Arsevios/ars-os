@@ -1,42 +1,18 @@
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
 import Sidebar from "./Sidebar";
+import Header from "./Header";
+import styles from "./Layout.module.css";
 
 export default function Layout() {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "260px 1fr",
-        gridTemplateRows: "64px 1fr",
-        height: "100vh",
-      }}
-    >
-      <div
-        style={{
-          gridColumn: "1 / 3",
-          borderBottom: "1px solid #ddd",
-        }}
-      >
+    <div className={styles.root}>
+      <Sidebar />
+      <div className={styles.body}>
         <Header />
+        <main className={styles.content}>
+          <Outlet />
+        </main>
       </div>
-
-      <div
-        style={{
-          borderRight: "1px solid #ddd",
-        }}
-      >
-        <Sidebar />
-      </div>
-
-      <main
-        style={{
-          padding: 24,
-          overflow: "auto",
-        }}
-      >
-        <Outlet />
-      </main>
     </div>
   );
 }

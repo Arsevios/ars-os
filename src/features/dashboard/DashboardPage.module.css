@@ -1,223 +1,101 @@
-.wrapper {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 0 8px;
+.page {
+  padding: 32px;
+  max-width: 900px;
 }
 
 .greeting {
-  margin-bottom: 4px;
+  margin-bottom: 32px;
 }
 
-.title {
-  font-size: 2rem;
+.greeting h1 {
+  font-size: 26px;
   font-weight: 700;
-  color: #ffffff;
-  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-.subtitle {
-  color: #a0a0b0;
+.greeting p {
+  font-size: 14px;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
-/* XP карточка */
-.levelCard {
-  background: linear-gradient(135deg, #2a2a3c 0%, #1e1e30 100%);
-  border-radius: 16px;
-  padding: 20px 24px;
-  border: 1px solid #3a3a4c;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 }
 
-.levelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-.levelBadge {
-  background: #5b5fe3;
-  color: white;
-  font-weight: 600;
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-}
-
-.xpValue {
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.progressBar {
-  height: 10px;
-  background: #3a3a4e;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: linear-gradient(90deg, #5b5fe3, #8b5cf6);
-  border-radius: 10px;
-  transition: width 0.3s ease;
-}
-
-.progressHint {
-  color: #8888a0;
-  margin: 8px 0 0;
-  font-size: 0.8rem;
-}
-
-/* Карточка */
 .card {
-  background: #1e1e2e;
-  border: 1px solid #2e2e3e;
-  border-radius: 16px;
-  padding: 20px 24px;
-}
-
-.cardTitle {
-  margin: 0 0 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #e0e0f0;
-}
-
-/* План дня */
-.planList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-.taskItem {
-  display: flex;
-  align-items: flex-start;
-  background: #2a2a3c;
-  border-radius: 12px;
-  padding: 12px;
-  gap: 12px;
-  transition: background 0.2s;
+.cardWide {
+  grid-column: 1 / -1;
 }
 
-.taskItem:hover {
-  background: #33334a;
-}
-
-.taskCompleted {
-  opacity: 0.6;
-}
-
-.taskTime {
-  font-size: 0.85rem;
+.cardLabel {
+  font-size: 11px;
   font-weight: 600;
-  color: #a0a0c0;
-  min-width: 90px;
-  padding-top: 2px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
-.taskContent {
-  flex: 1;
+.cardValue {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
-.taskHeader {
+.bar {
+  height: 6px;
+  background: var(--bg-active);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.barLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-.taskTitle {
-  font-weight: 600;
-  color: #ffffff;
+.btn {
+  padding: 8px 16px;
+  background: var(--bg-active);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
 }
 
-.taskXp {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #5b5fe3;
-  background: rgba(91, 95, 227, 0.15);
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.taskDesc {
-  color: #9999aa;
-  font-size: 0.85rem;
-  margin: 4px 0;
-}
-
-.taskDuration {
-  font-size: 0.8rem;
-  color: #666688;
-}
-
-.completeButton {
-  background: #5b5fe3;
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.completeButton:hover {
-  background: #6c6fef;
-}
-
-.completedMark {
-  color: #44cc88;
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-/* Миссия */
-.missionText {
-  color: #c0c0d0;
-  font-size: 1rem;
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Активность */
-.activityList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.activityItem {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #2a2a3c;
-  color: #c0c0d0;
-  font-size: 0.9rem;
-}
-
-.activityItem:last-child {
-  border-bottom: none;
-}
-
-.activityXp {
-  color: #5b5fe3;
-  font-weight: 600;
-}
-
-.emptyPlan {
-  color: #7777aa;
-  font-style: italic;
+.btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent-light);
 }

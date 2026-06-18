@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useAppStore, Goal } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore";
+import type { Goal } from "../../store/appStore";
 import styles from "./SettingsPage.module.css";
 
 export default function SettingsPage() {

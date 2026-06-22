@@ -1,0 +1,2779 @@
+# Repository: D:\Projects\ars-os
+==================================================
+
+### SOURCE FILE: .gitignore
+--------------------------------------------------
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+### SOURCE FILE: eslint.config.js
+--------------------------------------------------
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+])
+
+
+### SOURCE FILE: index.html
+--------------------------------------------------
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ars-os</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+### SOURCE FILE: output.txt
+--------------------------------------------------
+# Repository: D:\Projects\ars-os
+==================================================
+
+### SOURCE FILE: .gitignore
+--------------------------------------------------
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+### SOURCE FILE: eslint.config.js
+--------------------------------------------------
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+])
+
+
+### SOURCE FILE: index.html
+--------------------------------------------------
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ars-os</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+
+
+### SOURCE FILE: package.json
+--------------------------------------------------
+{
+  "name": "ars-os",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.20.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.79.0",
+    "react-router-dom": "^7.18.0",
+    "reactflow": "^11.11.4",
+    "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.59.2",
+    "vite": "^8.0.12"
+  }
+}
+
+
+### SOURCE FILE: README.md
+--------------------------------------------------
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+
+### SOURCE FILE: trace.txt
+--------------------------------------------------
+
+
+### SOURCE FILE: tsconfig.app.json
+--------------------------------------------------
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "esnext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"]
+}
+
+
+### SOURCE FILE: tsconfig.json
+--------------------------------------------------
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+
+
+### SOURCE FILE: tsconfig.node.json
+--------------------------------------------------
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023"],
+    "module": "esnext",
+    "types": ["node"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["vite.config.ts"]
+}
+
+
+### SOURCE FILE: docs\CHANGELOG.md
+--------------------------------------------------
+
+
+### SOURCE FILE: docs\IDEAS.md
+--------------------------------------------------
+
+
+### SOURCE FILE: docs\PRINCIPLES.md
+--------------------------------------------------
+# AI Operating System Principles
+
+Version: 0.1
+
+---
+
+# Mission
+
+Build an operating system for one person.
+
+The system must help the owner become:
+
+- better every day
+- healthier
+- smarter
+- financially stronger
+- more disciplined
+- more useful to other people
+
+The operating system is not a task manager.
+
+It is a life operating system.
+
+---
+
+# Main Rule
+
+Every feature must answer one question.
+
+"Does this improve my real life?"
+
+If not, we do not build it.
+
+---
+
+# Simplicity First
+
+Simple > Complex
+
+Readable > Clever
+
+Maintainable > Fancy
+
+Every file should be easy to understand after six months.
+
+---
+
+# English Only
+
+All code.
+
+All variables.
+
+All functions.
+
+All folder names.
+
+All documentation.
+
+Everything is written in English.
+
+Reason:
+
+The project itself is English practice.
+
+---
+
+# Modular Architecture
+
+Every feature lives inside its own module.
+
+Example
+
+features/
+    dashboard/
+    english/
+    creator/
+    quests/
+    analytics/
+
+Modules should know as little as possible about each other.
+
+---
+
+# Local First
+
+The application must work without internet.
+
+Internet is an enhancement.
+
+Not a requirement.
+
+---
+
+# AI First
+
+AI is not an extra feature.
+
+AI is the central interface.
+
+Future examples:
+
+- AI Coach
+- AI Planner
+- AI Teacher
+- AI Reviewer
+- AI Assistant
+
+---
+
+# Everything is Data
+
+Everything should be measurable.
+
+Examples
+
+- XP
+- Skills
+- Money
+- Health
+- Reading
+- English
+- Guitar
+- YouTube
+- TikTok
+
+Everything produces history.
+
+History produces analytics.
+
+Analytics produces decisions.
+
+---
+
+# One Source of Truth
+
+Each piece of information exists once.
+
+Never duplicate data.
+
+---
+
+# Small Commits
+
+Every completed feature:
+
+Commit.
+
+Push.
+
+Update CHANGELOG.
+
+---
+
+# Documentation
+
+Every important module has documentation.
+
+No undocumented architecture.
+
+---
+
+# User Experience
+
+Fast.
+
+Minimal.
+
+No distractions.
+
+Dark mode by default.
+
+Keyboard friendly.
+
+---
+
+# Scalability
+
+The project starts for one user.
+
+Architecture should allow many users later.
+
+Without rewriting everything.
+
+---
+
+# Long-Term Goal
+
+This project should become:
+
+- my second brain
+- my productivity system
+- my education platform
+- my career dashboard
+- my creator dashboard
+- my personal CRM
+- my analytics center
+- my AI assistant
+
+Everything in one place.
+
+### SOURCE FILE: docs\ROADMAP.md
+--------------------------------------------------
+
+
+### SOURCE FILE: specs\Dashboard.md
+--------------------------------------------------
+# Dashboard Specification
+
+Version: 0.1
+
+---
+
+# Purpose
+
+Dashboard is the home screen.
+
+It answers one question.
+
+"What should I do right now?"
+
+---
+
+# Layout
+
++------------------------------------------------------+
+| Header                                               |
++------------------------------------------------------+
+
+| Daily Progress                                       |
+
+| Today's Focus                                        |
+
+| Active Quests                                        |
+
+| Skill Progress                                       |
+
+| Creator Progress                                     |
+
+| Health                                                |
+
+| Calendar                                              |
+
+| AI Coach                                              |
+
+---
+
+# Widgets
+
+## Daily Progress
+
+Shows:
+
+- Level
+- XP
+- Daily XP
+- Weekly XP
+- Streak
+
+---
+
+## Today's Focus
+
+Maximum three tasks.
+
+Only the most important work.
+
+Not a huge task list.
+
+---
+
+## Active Quests
+
+Current missions.
+
+Example
+
+- Learn SQL
+- English B2
+- Find Internship
+- Upload YouTube Video
+
+---
+
+## Skill Progress
+
+Shows current progress.
+
+Examples
+
+SQL
+
+██████░░░░ 60%
+
+English
+
+████████░░ 80%
+
+System Analysis
+
+██░░░░░░░░ 20%
+
+---
+
+## Creator Progress
+
+Platforms
+
+- YouTube
+- TikTok
+- Instagram
+
+Metrics
+
+Subscribers
+
+Views
+
+Videos
+
+Watch Time
+
+---
+
+## Health
+
+Weight
+
+Sleep
+
+Water
+
+Exercise
+
+Mood
+
+---
+
+## Calendar
+
+Today's events.
+
+Deadlines.
+
+Interviews.
+
+Important dates.
+
+---
+
+## AI Coach
+
+Daily message.
+
+Example
+
+"You uploaded two videos this week.
+
+Finish SQL Lesson 5 today."
+
+---
+
+# Future Widgets
+
+Finance
+
+Habits
+
+GitHub Activity
+
+Reading
+
+Books
+
+Projects
+
+Learning Time
+
+Pomodoro
+
+Music Practice
+
+Guitar
+
+English Speaking
+
+Interview Preparation
+
+Job Applications
+
+Network
+
+Relationships
+
+Travel
+
+---
+
+# Design Rules
+
+No scrolling if possible.
+
+Everything visible immediately.
+
+Large cards.
+
+Rounded corners.
+
+Dark theme.
+
+Responsive.
+
+Keyboard shortcuts.
+
+Fast loading.
+
+---
+
+# Data Sources
+
+Store
+
+Analytics
+
+Calendar
+
+Local Storage
+
+Future Database
+
+Future API
+
+---
+
+# Future AI Features
+
+Morning Briefing
+
+Evening Review
+
+Weekly Review
+
+Monthly Report
+
+Goal Prediction
+
+Risk Detection
+
+Habit Analysis
+
+Personal Recommendations
+
+### SOURCE FILE: src\index.css
+--------------------------------------------------
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-base:       #0d0d10;
+  --bg-surface:    #0a0a0f;
+  --bg-elevated:   #161620;
+  --bg-hover:      #14141e;
+  --bg-active:     #1c1c2e;
+  --border:        #1a1a24;
+  --border-subtle: #1e1e28;
+  --text-primary:  #e2e2e8;
+  --text-secondary:#a0a0b8;
+  --text-muted:    #5a5a72;
+  --accent:        #6d28d9;
+  --accent-light:  #a78bfa;
+  --accent-dim:    #3b2f6e;
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     14px;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2a38; border-radius: 3px; }
+* { scrollbar-width: thin; scrollbar-color: #2a2a38 transparent; }
+
+### SOURCE FILE: src\main.tsx
+--------------------------------------------------
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './app/App'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+### SOURCE FILE: docs\architecture\ARCHITECTURE.md
+--------------------------------------------------
+# ARS OS Architecture
+
+Version: 0.1
+
+---
+
+# Project Vision
+
+ARS OS (AI Operating System) is a personal operating system designed to manage every important area of life inside a single application.
+
+The project is not a task manager.
+
+The project is not a note-taking app.
+
+The project is a long-term platform for personal growth, education, career, finance, content creation, and life management.
+
+---
+
+# Main Goals
+
+- Build one system instead of many disconnected apps.
+- Learn software engineering while building a real product.
+- Improve English by using it in the codebase.
+- Keep the architecture scalable for many years.
+
+---
+
+# Technology Stack
+
+Frontend
+
+- React
+- TypeScript
+- Vite
+
+State Management
+
+- Zustand
+
+Routing
+
+- React Router
+
+Validation
+
+- Zod
+
+Forms
+
+- React Hook Form
+
+Version Control
+
+- Git
+- GitHub
+
+---
+
+# Project Structure
+
+```
+src/
+
+app/
+assets/
+components/
+config/
+features/
+hooks/
+lib/
+services/
+store/
+styles/
+types/
+utils/
+```
+
+---
+
+# Feature Structure
+
+Each feature should follow the same structure.
+
+Example:
+
+```
+features/
+
+dashboard/
+
+components/
+pages/
+hooks/
+services/
+types/
+utils/
+```
+
+Business logic must stay inside the feature.
+
+Reusable components belong in components/.
+
+---
+
+# Naming Rules
+
+Folders
+
+lowercase
+
+Example
+
+dashboard
+
+creator
+
+finance
+
+Components
+
+PascalCase
+
+Example
+
+DashboardPage.tsx
+
+Sidebar.tsx
+
+Header.tsx
+
+Hooks
+
+useSomething.ts
+
+Example
+
+useTheme.ts
+
+useUser.ts
+
+Stores
+
+something.store.ts
+
+Example
+
+user.store.ts
+
+settings.store.ts
+
+Types
+
+User.ts
+
+Mission.ts
+
+Finance.ts
+
+---
+
+# Code Style
+
+Always use:
+
+- Functional React components
+- TypeScript
+- Named exports when possible
+- Strong typing
+- Small reusable components
+
+Avoid:
+
+- Huge files
+- Duplicate code
+- Inline styles
+- Business logic inside UI components
+
+---
+
+# UI Principles
+
+Simple.
+
+Fast.
+
+Minimal.
+
+Readable.
+
+Function is more important than decoration.
+
+---
+
+# Application Modules
+
+Dashboard
+
+Second Brain
+
+Missions
+
+Skill Tree
+
+Finance
+
+Creator Hub
+
+Music
+
+Journal
+
+Analytics
+
+Calendar
+
+AI Coach
+
+Settings
+
+---
+
+# State Management
+
+Global state
+
+Zustand
+
+Local state
+
+React Hooks
+
+Never mix business logic with UI.
+
+---
+
+# Documentation
+
+Every important module must have a specification before implementation.
+
+Specifications are stored in:
+
+specs/
+
+Example
+
+Dashboard.md
+
+Finance.md
+
+SecondBrain.md
+
+---
+
+# Development Workflow
+
+1. Write specification.
+
+2. Review specification.
+
+3. Implement feature.
+
+4. Test feature.
+
+5. Commit changes.
+
+6. Update CHANGELOG.
+
+---
+
+# Git Commit Style
+
+Examples
+
+feat: add dashboard layout
+
+feat: add sidebar
+
+fix: routing issue
+
+refactor: move services
+
+docs: update architecture
+
+---
+
+# Long-term Vision
+
+ARS OS should become a complete personal operating system that integrates:
+
+- Knowledge Management
+- Learning
+- Career
+- Finance
+- Health
+- Content Creation
+- Music
+- AI Assistance
+- Analytics
+- Planning
+
+Everything should work together as one ecosystem.
+
+### SOURCE FILE: docs\database\DATABASE.md
+--------------------------------------------------
+
+
+### SOURCE FILE: src\app\App.tsx
+--------------------------------------------------
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+
+### SOURCE FILE: src\app\router.tsx
+--------------------------------------------------
+import { createBrowserRouter } from "react-router-dom";
+import Layout from "../components/layout/Layout";
+import DashboardPage from "../features/dashboard/DashboardPage";
+import SkillTreePage from "../features/skill-tree/SkillTreePage";
+
+const P = ({ title }: { title: string }) => (
+  <div style={{ padding: 32 }}>
+    <h1 style={{ color: "var(--text-primary)", fontSize: 28, fontWeight: 700 }}>{title}</h1>
+    <p style={{ color: "var(--text-muted)", marginTop: 8 }}>Coming soon.</p>
+  </div>
+);
+
+export const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      { path: "/",             element: <DashboardPage /> },
+      { path: "/dashboard",    element: <DashboardPage /> },
+      { path: "/skill-tree",   element: <SkillTreePage /> },
+      { path: "/second-brain", element: <P title="Second Brain" /> },
+      { path: "/english",      element: <P title="English" /> },
+      { path: "/creator",      element: <P title="Creator" /> },
+      { path: "/career",       element: <P title="Career" /> },
+      { path: "/finance",      element: <P title="Finance" /> },
+      { path: "/journal",      element: <P title="Journal" /> },
+      { path: "/music",        element: <P title="Music" /> },
+      { path: "/analytics",    element: <P title="Analytics" /> },
+      { path: "/calendar",     element: <P title="Calendar" /> },
+      { path: "/settings",     element: <P title="Settings" /> },
+    ],
+  },
+]);
+
+### SOURCE FILE: src\components\layout\Header.module.css
+--------------------------------------------------
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 20px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 420px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 32px;
+  padding: 0 36px 0 32px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus {
+  border-color: var(--accent);
+  background: var(--bg-base);
+}
+
+.kbd {
+  position: absolute;
+  right: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  pointer-events: none;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 120px;
+  justify-content: flex-end;
+}
+
+.date {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--accent-light);
+  background: #1a1030;
+  border: 1px solid var(--accent-dim);
+  border-radius: 20px;
+  padding: 3px 10px 3px 8px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 5px var(--accent);
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+### SOURCE FILE: src\components\layout\Header.tsx
+--------------------------------------------------
+import { useLocation } from "react-router-dom";
+import styles from "./Header.module.css";
+
+const TITLES: Record<string, string> = {
+  "/":            "Dashboard",
+  "/dashboard":   "Dashboard",
+  "/skill-tree":  "Skill Tree",
+  "/second-brain":"Second Brain",
+  "/english":     "English",
+  "/creator":     "Creator",
+  "/career":      "Career",
+  "/finance":     "Finance",
+  "/journal":     "Journal",
+  "/music":       "Music",
+  "/analytics":   "Analytics",
+  "/calendar":    "Calendar",
+  "/settings":    "Settings",
+};
+
+export default function Header() {
+  const { pathname } = useLocation();
+  const title = TITLES[pathname] ?? "ARS-OS";
+  const date = new Date().toLocaleDateString("en-US", {
+    weekday: "short", month: "short", day: "numeric",
+  });
+
+  return (
+    <header className={styles.header}>
+      <span className={styles.title}>{title}</span>
+
+      <div className={styles.search}>
+        <svg className={styles.searchIcon} viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.4"/>
+          <path d="M10.5 10.5L13 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+        <input className={styles.input} placeholder="Search..." aria-label="Search" />
+        <kbd className={styles.kbd}>⌘K</kbd>
+      </div>
+
+      <div className={styles.right}>
+        <span className={styles.date}>{date}</span>
+        <div className={styles.badge}>
+          <span className={styles.dot} />
+          AI
+        </div>
+      </div>
+    </header>
+  );
+}
+
+### SOURCE FILE: src\components\layout\Layout.module.css
+--------------------------------------------------
+.root {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--bg-base);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-base);
+}
+
+### SOURCE FILE: src\components\layout\Layout.tsx
+--------------------------------------------------
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import styles from "./Layout.module.css";
+
+export default function Layout() {
+  return (
+    <div className={styles.root}>
+      <Sidebar />
+      <div className={styles.body}>
+        <Header />
+        <main className={styles.content}>
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+### SOURCE FILE: src\components\layout\Sidebar.module.css
+--------------------------------------------------
+.sidebar {
+  width: 216px;
+  min-width: 216px;
+  height: 100vh;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 14px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.logoName {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.logoSub {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.12s, background 0.12s;
+  position: relative;
+  white-space: nowrap;
+}
+
+.link:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.active {
+  color: var(--text-primary);
+  background: var(--bg-active);
+}
+
+.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 2.5px;
+  background: var(--accent-light);
+  border-radius: 0 2px 2px 0;
+}
+
+.icon {
+  font-size: 13px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bottom {
+  padding: 6px 6px 12px;
+  border-top: 1px solid var(--border);
+}
+
+### SOURCE FILE: src\components\layout\Sidebar.tsx
+--------------------------------------------------
+import { NavLink } from "react-router-dom";
+import styles from "./Sidebar.module.css";
+
+const NAV = [
+  { label: "Dashboard",    to: "/dashboard",    icon: "⊞" },
+  { label: "Skill Tree",   to: "/skill-tree",   icon: "⬡" },
+  { label: "Second Brain", to: "/second-brain", icon: "◎" },
+  { label: "English",      to: "/english",      icon: "Aa" },
+  { label: "Creator",      to: "/creator",      icon: "✦" },
+  { label: "Career",       to: "/career",       icon: "◈" },
+  { label: "Finance",      to: "/finance",      icon: "◇" },
+  { label: "Journal",      to: "/journal",      icon: "▣" },
+  { label: "Music",        to: "/music",        icon: "♪" },
+  { label: "Analytics",    to: "/analytics",    icon: "▲" },
+  { label: "Calendar",     to: "/calendar",     icon: "◻" },
+];
+
+const BOTTOM = [
+  { label: "Settings", to: "/settings", icon: "⚙" },
+];
+
+export default function Sidebar() {
+  return (
+    <aside className={styles.sidebar}>
+      <div className={styles.logo}>
+        <div className={styles.logoIcon}>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect width="22" height="22" rx="6" fill="url(#g)" />
+            <path d="M6 16L11 6l5 10" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M8 12.5h6" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="22" y2="22">
+                <stop stopColor="#7c3aed"/>
+                <stop offset="1" stopColor="#4f46e5"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div className={styles.logoText}>
+          <span className={styles.logoName}>AI Operating</span>
+          <span className={styles.logoSub}>System</span>
+        </div>
+      </div>
+
+      <nav className={styles.nav}>
+        {NAV.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              [styles.link, isActive ? styles.active : ""].filter(Boolean).join(" ")
+            }
+          >
+            <span className={styles.icon}>{item.icon}</span>
+            <span className={styles.label}>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className={styles.bottom}>
+        {BOTTOM.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              [styles.link, isActive ? styles.active : ""].filter(Boolean).join(" ")
+            }
+          >
+            <span className={styles.icon}>{item.icon}</span>
+            <span className={styles.label}>{item.label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </aside>
+  );
+}
+
+### SOURCE FILE: src\features\dashboard\DashboardPage.module.css
+--------------------------------------------------
+.page {
+  padding: 28px 32px;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* TOP */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.greeting {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.coins {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f59e0b;
+  background: #1c1a0a;
+  border: 1px solid #3d2f00;
+  border-radius: 20px;
+  padding: 6px 14px;
+}
+
+.coinIcon {
+  font-size: 16px;
+}
+
+/* XP BAR */
+.xpRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.xpMeta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.barOuter {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.barInner {
+  height: 100%;
+  background: linear-gradient(90deg, #6d28d9, #a78bfa);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* TIMER */
+.timerCard {
+  background: var(--bg-elevated);
+  border: 1px solid #3b2f6e;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.timerPhase {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.timerDisplay {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.timerCycles {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.timerActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btnComplete {
+  padding: 10px 20px;
+  background: #6d28d9;
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.btnComplete:hover { background: #5b21b6; }
+
+.btnStop {
+  padding: 10px 16px;
+  background: var(--bg-active);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  transition: color 0.15s;
+}
+
+.btnStop:hover { color: var(--text-primary); }
+
+/* TASKS */
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.taskCard {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid #6d28d9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.taskDone {
+  opacity: 0.6;
+}
+
+.taskHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.taskHeader:hover {
+  background: var(--bg-hover);
+}
+
+.taskLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.taskCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: white;
+  font-weight: 700;
+}
+
+.taskTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.taskMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.taskRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.miniBar {
+  width: 80px;
+  height: 4px;
+  background: var(--bg-active);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.miniFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* POMODOROS */
+.pomodoros {
+  border-top: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pomoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  transition: border-color 0.15s;
+}
+
+.pomoCompleted {
+  opacity: 0.5;
+}
+
+.pomoActive {
+  border-color: #6d28d9;
+  background: #0f0d1a;
+}
+
+.pomoNum {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pomoContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.pomoInstruction {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.pomoResource {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #a78bfa;
+  text-decoration: none;
+}
+
+.pomoResource:hover {
+  text-decoration: underline;
+}
+
+.pomoMeta {
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pomoActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btnStart {
+  padding: 6px 12px;
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.btnStart:hover { opacity: 0.85; }
+
+.btnDone {
+  padding: 6px 12px;
+  background: var(--bg-active);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+
+.btnDone:hover {
+  color: #4ade80;
+  border-color: #4ade80;
+}
+
+### SOURCE FILE: src\features\dashboard\DashboardPage.tsx
+--------------------------------------------------
+import { useEffect, useRef, useState } from "react";
+import { useAppStore } from "../../store/appStore";
+import type { DayTask, Pomodoro } from "../../store/appStore";
+import styles from "./DashboardPage.module.css";
+
+function formatTime(seconds: number) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function greeting(name: string) {
+  const h = new Date().getHours();
+  if (h < 6) return `Ещё ночь, ${name}`;
+  if (h < 12) return `Доброе утро, ${name}`;
+  if (h < 18) return `Добрый день, ${name}`;
+  return `Добрый вечер, ${name}`;
+}
+
+const SKILL_COLORS: Record<string, string> = {
+  sql: "#6d28d9",
+  "rest-api": "#0891b2",
+  english: "#059669",
+  linkedin: "#0a66c2",
+  bpmn: "#b45309",
+  jira: "#1d4ed8",
+};
+
+export default function DashboardPage() {
+  const {
+    name, title, level, totalXP, todayXP, todayCoins,
+    xpGoalToday, coinsGoalToday, streak,
+    dayTasks, session, skills,
+    completePomodoro, startPomodoro, tickTimer, endSession,
+    resetDayIfNeeded,
+  } = useAppStore();
+
+  const [activeTask, setActiveTask] = useState<string | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    resetDayIfNeeded();
+  }, []);
+
+  useEffect(() => {
+    if (session.active) {
+      timerRef.current = setInterval(() => tickTimer(), 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [session.active]);
+
+  const completedTasks = dayTasks.filter((t) => t.completed).length;
+  const xpPct = Math.min((todayXP / xpGoalToday) * 100, 100);
+  const coinsPct = Math.min((todayCoins / coinsGoalToday) * 100, 100);
+
+  return (
+    <div className={styles.page}>
+      {/* HEADER ROW */}
+      <div className={styles.top}>
+        <div>
+          <h1 className={styles.greeting}>{greeting(name)}</h1>
+          <p className={styles.subtitle}>
+            {title} · Lv.{level} · Day {streak} · {completedTasks}/{dayTasks.length} tasks done
+          </p>
+        </div>
+        <div className={styles.coins}>
+          <span className={styles.coinIcon}>◈</span>
+          <span>{todayCoins} / {coinsGoalToday}</span>
+        </div>
+      </div>
+
+      {/* XP BAR */}
+      <div className={styles.xpRow}>
+        <div className={styles.xpMeta}>
+          <span>XP сегодня</span>
+          <span>{todayXP} / {xpGoalToday}</span>
+        </div>
+        <div className={styles.barOuter}>
+          <div className={styles.barInner} style={{ width: `${xpPct}%` }} />
+        </div>
+      </div>
+
+      {/* POMODORO TIMER */}
+      {session.active && (
+        <div className={styles.timerCard}>
+          <div className={styles.timerPhase}>
+            {session.phase === "work" ? "🍅 Помодоро" : session.phase === "short-break" ? "☕ Короткий перерыв" : "🌿 Длинный перерыв"}
+          </div>
+          <div className={styles.timerDisplay}>{formatTime(session.secondsLeft)}</div>
+          <div className={styles.timerCycles}>Циклов завершено: {session.completedCycles}</div>
+          <div className={styles.timerActions}>
+            {session.phase === "work" && session.taskId && session.pomodoroId && (
+              <button
+                className={styles.btnComplete}
+                onClick={() => completePomodoro(session.taskId!, session.pomodoroId!)}
+              >
+                ✓ Завершить и получить XP
+              </button>
+            )}
+            <button className={styles.btnStop} onClick={endSession}>✕ Стоп</button>
+          </div>
+        </div>
+      )}
+
+      {/* TASKS */}
+      <div className={styles.tasks}>
+        {dayTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            color={SKILL_COLORS[task.skillId] ?? "#6d28d9"}
+            expanded={activeTask === task.id}
+            onToggle={() => setActiveTask(activeTask === task.id ? null : task.id)}
+            onStart={startPomodoro}
+            onComplete={completePomodoro}
+            sessionActive={session.active}
+            sessionPomoId={session.pomodoroId}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TaskCard({
+  task, color, expanded, onToggle, onStart, onComplete, sessionActive, sessionPomoId,
+}: {
+  task: DayTask;
+  color: string;
+  expanded: boolean;
+  onToggle: () => void;
+  onStart: (taskId: string, pomoId: string) => void;
+  onComplete: (taskId: string, pomoId: string) => void;
+  sessionActive: boolean;
+  sessionPomoId: string | null;
+}) {
+  const done = task.pomodoros.filter((p) => p.completed).length;
+  const total = task.pomodoros.length;
+  const pct = (done / total) * 100;
+
+  return (
+    <div className={`${styles.taskCard} ${task.completed ? styles.taskDone : ""}`}
+      style={{ borderLeftColor: color }}>
+      <div className={styles.taskHeader} onClick={onToggle}>
+        <div className={styles.taskLeft}>
+          <div className={styles.taskCheck} style={{ borderColor: color, background: task.completed ? color : "transparent" }}>
+            {task.completed && <span>✓</span>}
+          </div>
+          <div>
+            <div className={styles.taskTitle}>{task.title}</div>
+            <div className={styles.taskMeta}>
+              {done}/{total} помодоро · +{task.xpReward} XP · +{task.coinsReward} ◈
+            </div>
+          </div>
+        </div>
+        <div className={styles.taskRight}>
+          <div className={styles.miniBar}>
+            <div className={styles.miniFill} style={{ width: `${pct}%`, background: color }} />
+          </div>
+          <span className={styles.chevron}>{expanded ? "▲" : "▼"}</span>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className={styles.pomodoros}>
+          {task.pomodoros.map((pomo, i) => (
+            <PomodoroRow
+              key={pomo.id}
+              pomo={pomo}
+              index={i}
+              color={color}
+              taskId={task.id}
+              onStart={onStart}
+              onComplete={onComplete}
+              sessionActive={sessionActive}
+              isCurrentSession={sessionPomoId === pomo.id}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PomodoroRow({
+  pomo, index, color, taskId, onStart, onComplete, sessionActive, isCurrentSession,
+}: {
+  pomo: Pomodoro;
+  index: number;
+  color: string;
+  taskId: string;
+  onStart: (taskId: string, pomoId: string) => void;
+  onComplete: (taskId: string, pomoId: string) => void;
+  sessionActive: boolean;
+  isCurrentSession: boolean;
+}) {
+  return (
+    <div className={`${styles.pomoRow} ${pomo.completed ? styles.pomoCompleted : ""} ${isCurrentSession ? styles.pomoActive : ""}`}>
+      <div className={styles.pomoNum} style={{ background: pomo.completed ? color : "transparent", borderColor: color }}>
+        {pomo.completed ? "✓" : index + 1}
+      </div>
+      <div className={styles.pomoContent}>
+        <p className={styles.pomoInstruction}>{pomo.instruction}</p>
+        {pomo.resource && (
+          <a className={styles.pomoResource} href={pomo.resourceUrl} target="_blank" rel="noreferrer">
+            ↗ {pomo.resource}
+          </a>
+        )}
+        <div className={styles.pomoMeta}>
+          🍅 {pomo.duration} мин · +{pomo.xpReward} XP · +{pomo.coinsReward} ◈
+        </div>
+      </div>
+      {!pomo.completed && (
+        <div className={styles.pomoActions}>
+          {!sessionActive && (
+            <button className={styles.btnStart} style={{ background: color }} onClick={() => onStart(taskId, pomo.id)}>
+              ▶ Старт
+            </button>
+          )}
+          <button className={styles.btnDone} onClick={() => onComplete(taskId, pomo.id)}>
+            ✓
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+### SOURCE FILE: src\features\settings\SettingsPage.module.css
+--------------------------------------------------
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #a0a0b0;
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.goalCard {
+  background: #1e1e2e;
+  border: 1px solid #2e2e3e;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.goalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.goalHeader h3 {
+  margin: 0;
+  color: #fff;
+  text-transform: capitalize;
+  font-size: 1.1rem;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #ff5c5c;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.field {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 0.8rem;
+  color: #8888a0;
+  margin-bottom: 4px;
+}
+
+.field input {
+  background: #2a2a3c;
+  border: 1px solid #3a3a4c;
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #5b5fe3;
+}
+
+.addCard {
+  background: #1e1e2e;
+  border: 1px solid #2e2e3e;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.addCard h3 {
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.addForm {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.addForm input {
+  background: #2a2a3c;
+  border: 1px solid #3a3a4c;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #fff;
+  min-width: 120px;
+  flex: 1;
+}
+
+.addForm button {
+  background: #5b5fe3;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.addForm button:hover {
+  background: #6c6fef;
+}
+
+### SOURCE FILE: src\features\settings\SettingsPage.tsx
+--------------------------------------------------
+import { useState } from "react";
+import { useAppStore } from "../../store/appStore";
+import type { Goal } from "../../store/appStore";
+import styles from "./SettingsPage.module.css";
+
+export default function SettingsPage() {
+  const { goals, updateGoal, addGoal, removeGoal } = useAppStore();
+  const [newCategory, setNewCategory] = useState("");
+  const [newMinutes, setNewMinutes] = useState(30);
+  const [newXpPerMin, setNewXpPerMin] = useState(0.5);
+  const [newPriority, setNewPriority] = useState(2);
+
+  const handleAdd = () => {
+    const cat = newCategory.trim().toLowerCase();
+    if (!cat) return;
+    const goal: Goal = {
+      category: cat,
+      dailyMinutes: newMinutes,
+      xpPerMinute: newXpPerMin,
+      priority: newPriority,
+    };
+    addGoal(cat, goal);
+    setNewCategory("");
+    setNewMinutes(30);
+    setNewXpPerMin(0.5);
+    setNewPriority(2);
+  };
+
+  return (
+    <div className={styles.wrapper}>
+      <h1 className={styles.title}>Настройки целей</h1>
+      <p className={styles.subtitle}>Здесь можно настроить ежедневные занятия и приоритеты</p>
+
+      <div className={styles.grid}>
+        {Object.entries(goals).map(([cat, goal]) => (
+          <div key={cat} className={styles.goalCard}>
+            <div className={styles.goalHeader}>
+              <h3>{cat}</h3>
+              <button
+                className={styles.removeBtn}
+                onClick={() => removeGoal(cat)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.field}>
+              <label>Минут в день</label>
+              <input
+                type="number"
+                value={goal.dailyMinutes}
+                onChange={(e) =>
+                  updateGoal(cat, { dailyMinutes: +e.target.value })
+                }
+                min={5}
+                max={120}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>XP за минуту</label>
+              <input
+                type="number"
+                value={goal.xpPerMinute}
+                onChange={(e) =>
+                  updateGoal(cat, { xpPerMinute: +e.target.value })
+                }
+                step={0.1}
+                min={0.1}
+                max={2}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Приоритет (1-3)</label>
+              <input
+                type="number"
+                value={goal.priority}
+                onChange={(e) =>
+                  updateGoal(cat, { priority: +e.target.value })
+                }
+                min={1}
+                max={3}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Добавление новой цели */}
+      <div className={styles.addCard}>
+        <h3>Добавить цель</h3>
+        <div className={styles.addForm}>
+          <input
+            placeholder="Категория (например, sql)"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="Минут в день"
+            value={newMinutes}
+            onChange={(e) => setNewMinutes(+e.target.value)}
+          />
+          <input
+            type="number"
+            placeholder="XP за минуту"
+            value={newXpPerMin}
+            onChange={(e) => setNewXpPerMin(+e.target.value)}
+            step={0.1}
+          />
+          <input
+            type="number"
+            placeholder="Приоритет"
+            value={newPriority}
+            onChange={(e) => setNewPriority(+e.target.value)}
+            min={1}
+            max={3}
+          />
+          <button onClick={handleAdd}>Добавить</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+### SOURCE FILE: src\features\skill-tree\SkillTreePage.module.css
+--------------------------------------------------
+.page {
+  padding: 28px 32px;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.goal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.goalLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.goalValue {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.goalSub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* TREE */
+.tree {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.branch {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.branchHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.branchIcon {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.branchName {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.branchSkills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+/* SKILL CARD */
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-top: 3px solid;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: var(--border-subtle);
+}
+
+.cardLocked {
+  opacity: 0.45;
+  filter: grayscale(0.4);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.skillName {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.skillDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.levelBadge {
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.levelMax {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* XP */
+.xpRow {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.xpBar {
+  height: 5px;
+  background: var(--bg-active);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.xpFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.xpText {
+  font-size: 11px;
+  color: var(--text-muted);
+  align-self: flex-end;
+}
+
+/* TOPICS */
+.topics {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.topicUnlocked,
+.topicLocked {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+}
+
+.topicUnlocked {
+  color: var(--text-secondary);
+}
+
+.topicLocked {
+  color: var(--text-muted);
+}
+
+.topicIcon {
+  font-size: 11px;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+### SOURCE FILE: src\features\skill-tree\SkillTreePage.tsx
+--------------------------------------------------
+import { useAppStore } from "../../store/appStore";
+import type { Skill } from "../../store/appStore";
+import styles from "./SkillTreePage.module.css";
+
+const TREE_STRUCTURE = [
+  {
+    category: "System Analysis",
+    icon: "◈",
+    skills: ["sql", "rest-api", "bpmn", "jira"],
+  },
+  {
+    category: "Soft Skills",
+    icon: "◎",
+    skills: ["english"],
+  },
+  {
+    category: "Personal Brand",
+    icon: "✦",
+    skills: ["linkedin"],
+  },
+];
+
+export default function SkillTreePage() {
+  const { skills, name, level, totalXP } = useAppStore();
+  const skillMap = Object.fromEntries(
+  skills.map((s: Skill) => [s.id, s])
+);
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Skill Tree</h1>
+          <p className={styles.sub}>Модель навыков · {name} · Lv.{level} · {totalXP} XP total</p>
+        </div>
+        <div className={styles.goal}>
+          <span className={styles.goalLabel}>Цель</span>
+          <span className={styles.goalValue}>Junior System Analyst</span>
+          <span className={styles.goalSub}>Remote · USA market · 12 мес.</span>
+        </div>
+      </div>
+
+      <div className={styles.tree}>
+        {TREE_STRUCTURE.map((branch) => (
+          <div key={branch.category} className={styles.branch}>
+            <div className={styles.branchHeader}>
+              <span className={styles.branchIcon}>{branch.icon}</span>
+              <span className={styles.branchName}>{branch.category}</span>
+            </div>
+            <div className={styles.branchSkills}>
+              {branch.skills.map((id) => {
+                const skill = skillMap[id];
+                if (!skill) return null;
+                return <SkillCard key={id} skill={skill} />;
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkillCard({ skill }: { skill: Skill }) {
+  const pct = Math.min((skill.xp / skill.xpToNext) * 100, 100);
+  const isLocked = skill.dependencies.length > 0 && skill.level === 0;
+
+  return (
+    <div className={`${styles.card} ${isLocked ? styles.cardLocked : ""}`}
+      style={{ borderTopColor: skill.color }}>
+      <div className={styles.cardTop}>
+        <div>
+          <div className={styles.skillName}>{skill.name}</div>
+          <div className={styles.skillDesc}>{skill.description}</div>
+        </div>
+        <div className={styles.levelBadge} style={{ background: `${skill.color}22`, border: `1px solid ${skill.color}44` }}>
+          <span style={{ color: skill.color }}>Lv.{skill.level}</span>
+          <span className={styles.levelMax}>/{skill.maxLevel}</span>
+        </div>
+      </div>
+
+      <div className={styles.xpRow}>
+        <div className={styles.xpBar}>
+          <div className={styles.xpFill} style={{ width: `${pct}%`, background: skill.color }} />
+        </div>
+        <span className={styles.xpText}>{skill.xp} / {skill.xpToNext} XP</span>
+      </div>
+
+      <div className={styles.topics}>
+        {skill.unlocked.map((topic) => (
+          <div key={topic} className={styles.topicUnlocked}>
+            <span className={styles.topicIcon} style={{ color: skill.color }}>✓</span>
+            <span>{topic}</span>
+          </div>
+        ))}
+        {skill.locked.map((topic) => (
+          <div key={topic} className={styles.topicLocked}>
+            <span className={styles.topicIcon}>□</span>
+            <span>{topic}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+Total token count: 6354

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "../components/layout/Layout";
 import DashboardPage from "../features/dashboard/DashboardPage";
 import SkillTreePage from "../features/skill-tree/SkillTreePage";
+import SettingsPage from "../features/settings/SettingsPage";
 
 const P = ({ title }: { title: string }) => (
   <div style={{ padding: 32 }}>
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
       { path: "/music",        element: <P title="Music" /> },
       { path: "/analytics",    element: <P title="Analytics" /> },
       { path: "/calendar",     element: <P title="Calendar" /> },
-      { path: "/settings",     element: <P title="Settings" /> },
+      { path: "/settings",     element: <SettingsPage /> },
     ],
   },
 ]);

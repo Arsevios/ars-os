@@ -46,6 +46,13 @@ export interface PomodoroSession {
   completedCycles: number;
 }
 
+export interface Goal {
+  category: string;
+  dailyMinutes: number;
+  xpPerMinute: number;
+  priority: number;
+}
+
 interface AppState {
   name: string;
   title: string;
@@ -62,6 +69,7 @@ interface AppState {
   dayTasks: DayTask[];
   session: PomodoroSession;
   lastResetDate: string;
+  goals: Record<string, Goal>;
 
   completePomodoro: (taskId: string, pomodoroId: string) => void;
   startPomodoro: (taskId: string, pomodoroId: string) => void;
@@ -70,6 +78,9 @@ interface AppState {
   endSession: () => void;
   addSkillXP: (skillId: string, xp: number) => void;
   resetDayIfNeeded: () => void;
+  updateGoal: (category: string, patch: Partial<Goal>) => void;
+  addGoal: (category: string, goal: Goal) => void;
+  removeGoal: (category: string) => void;
 }
 
 const INITIAL_SKILLS: Skill[] = [
@@ -298,6 +309,15 @@ const TODAY_TASKS: DayTask[] = [
   },
 ];
 
+const INITIAL_GOALS: Record<string, Goal> = {
+  sql:       { category: "sql",       dailyMinutes: 75,  xpPerMinute: 2,   priority: 1 },
+  "rest-api":{ category: "rest-api",  dailyMinutes: 50,  xpPerMinute: 2,   priority: 1 },
+  english:   { category: "english",   dailyMinutes: 100, xpPerMinute: 1.5, priority: 1 },
+  linkedin:  { category: "linkedin",  dailyMinutes: 25,  xpPerMinute: 3,   priority: 2 },
+  bpmn:      { category: "bpmn",      dailyMinutes: 50,  xpPerMinute: 2,   priority: 2 },
+  jira:      { category: "jira",      dailyMinutes: 25,  xpPerMinute: 2,   priority: 3 },
+};
+
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export const useAppStore = create<AppState>()(
@@ -317,6 +337,7 @@ export const useAppStore = create<AppState>()(
       skills: INITIAL_SKILLS,
       dayTasks: TODAY_TASKS,
       lastResetDate: todayISO(),
+      goals: INITIAL_GOALS,
       session: {
         active: false,
         taskId: null,
@@ -461,6 +482,26 @@ export const useAppStore = create<AppState>()(
           }),
         }));
       },
+
+      updateGoal: (category, patch) =>
+        set((state) => ({
+          goals: {
+            ...state.goals,
+            [category]: { ...state.goals[category], ...patch },
+          },
+        })),
+
+      addGoal: (category, goal) =>
+        set((state) => ({
+          goals: { ...state.goals, [category]: goal },
+        })),
+
+      removeGoal: (category) =>
+        set((state) => {
+          const next = { ...state.goals };
+          delete next[category];
+          return { goals: next };
+        }),
     }),
     { name: "ars-os-v1" }
   )

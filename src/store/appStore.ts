@@ -1,62 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { Skill, Pomodoro, DayTask, PomodoroSession, Goal } from "../types";
 
-export interface Skill {
-  id: string;
-  name: string;
-  category: string;
-  level: number;
-  maxLevel: number;
-  xp: number;
-  xpToNext: number;
-  description: string;
-  unlocked: string[];
-  locked: string[];
-  dependencies: string[];
-  color: string;
-}
-
-export interface Pomodoro {
-  id: string;
-  duration: number; // minutes
-  instruction: string;
-  resource?: string;
-  resourceUrl?: string;
-  xpReward: number;
-  coinsReward: number;
-  completed: boolean;
-}
-
-export interface DayTask {
-  id: string;
-  skillId: string;
-  title: string;
-  xpReward: number;
-  coinsReward: number;
-  pomodoros: Pomodoro[];
-  completed: boolean;
-}
-
-export interface PomodoroSession {
-  active: boolean;
-  taskId: string | null;
-  pomodoroId: string | null;
-  phase: "work" | "short-break" | "long-break";
-  secondsLeft: number;
-  completedCycles: number;
-}
-
-export interface Goal {
-  category: string;
-  dailyMinutes: number;
-  xpPerMinute: number;
-  priority: number;
-}
+// Re-export for backward compatibility — SkillTreePage, DashboardPage, SettingsPage не трогаем
+export type { Skill, Pomodoro, DayTask, PomodoroSession, Goal };
 
 interface AppState {
   name: string;
   title: string;
-  dayStart: string; // ISO date
+  dayStart: string;
   totalXP: number;
   todayXP: number;
   totalCoins: number;
@@ -94,7 +46,14 @@ const INITIAL_SKILLS: Skill[] = [
     xpToNext: 150,
     description: "Structured Query Language — основа технических собеседований",
     unlocked: [],
-    locked: ["SELECT / WHERE / ORDER BY", "GROUP BY / HAVING", "JOIN (все виды)", "Подзапросы", "Window Functions", "Execution Plan"],
+    locked: [
+      "SELECT / WHERE / ORDER BY",
+      "GROUP BY / HAVING",
+      "JOIN (все виды)",
+      "Подзапросы",
+      "Window Functions",
+      "Execution Plan",
+    ],
     dependencies: [],
     color: "#6d28d9",
   },
@@ -108,7 +67,13 @@ const INITIAL_SKILLS: Skill[] = [
     xpToNext: 120,
     description: "HTTP методы, коды ответов, Postman, Swagger, JSON",
     unlocked: [],
-    locked: ["HTTP методы GET/POST/PUT/DELETE", "Коды ответов", "Postman", "Swagger / OpenAPI", "JSON / XML"],
+    locked: [
+      "HTTP методы GET/POST/PUT/DELETE",
+      "Коды ответов",
+      "Postman",
+      "Swagger / OpenAPI",
+      "JSON / XML",
+    ],
     dependencies: [],
     color: "#0891b2",
   },
@@ -122,7 +87,13 @@ const INITIAL_SKILLS: Skill[] = [
     xpToNext: 180,
     description: "Цель: C1. Comprehensible input + shadowing + диктанты",
     unlocked: ["A2 — базовый уровень"],
-    locked: ["B1 Reading / Listening", "B1 Speaking (shadowing)", "B2 Technical vocabulary", "B2 → C1 переход", "C1 свободный"],
+    locked: [
+      "B1 Reading / Listening",
+      "B1 Speaking (shadowing)",
+      "B2 Technical vocabulary",
+      "B2 → C1 переход",
+      "C1 свободный",
+    ],
     dependencies: [],
     color: "#059669",
   },
@@ -170,6 +141,15 @@ const INITIAL_SKILLS: Skill[] = [
   },
 ];
 
+const INITIAL_GOALS: Record<string, Goal> = {
+  sql:        { category: "sql",       dailyMinutes: 75,  xpPerMinute: 2,   priority: 1 },
+  "rest-api": { category: "rest-api",  dailyMinutes: 50,  xpPerMinute: 2,   priority: 1 },
+  english:    { category: "english",   dailyMinutes: 100, xpPerMinute: 1.5, priority: 1 },
+  linkedin:   { category: "linkedin",  dailyMinutes: 25,  xpPerMinute: 3,   priority: 2 },
+  bpmn:       { category: "bpmn",      dailyMinutes: 50,  xpPerMinute: 2,   priority: 2 },
+  jira:       { category: "jira",      dailyMinutes: 25,  xpPerMinute: 2,   priority: 3 },
+};
+
 const TODAY_TASKS: DayTask[] = [
   {
     id: "task-sql",
@@ -182,7 +162,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "sql-p1",
         duration: 25,
-        instruction: "Пройди урок SELECT / WHERE на sqlbolt.com (Lessons 1–4). Напиши 5 своих запросов в редакторе.",
+        instruction:
+          "Пройди урок SELECT / WHERE на sqlbolt.com (Lessons 1–4). Напиши 5 своих запросов в редакторе.",
         resource: "SQLBolt — Lessons 1–4",
         resourceUrl: "https://sqlbolt.com",
         xpReward: 50,
@@ -192,7 +173,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "sql-p2",
         duration: 25,
-        instruction: "ORDER BY + LIMIT на sqlbolt.com (Lessons 5–6). Затем 5 запросов на mode.com/sql-tutorial.",
+        instruction:
+          "ORDER BY + LIMIT на sqlbolt.com (Lessons 5–6). Затем 5 запросов на mode.com/sql-tutorial.",
         resource: "Mode SQL Tutorial",
         resourceUrl: "https://mode.com/sql-tutorial",
         xpReward: 50,
@@ -202,7 +184,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "sql-p3",
         duration: 25,
-        instruction: "Без подсказок объясни вслух (запиши голос или напиши): разница между WHERE / ORDER BY / LIMIT. Потом проверь себя.",
+        instruction:
+          "Без подсказок объясни вслух (запиши голос или напиши): разница между WHERE / ORDER BY / LIMIT. Потом проверь себя.",
         xpReward: 50,
         coinsReward: 10,
         completed: false,
@@ -220,7 +203,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "api-p1",
         duration: 25,
-        instruction: "Смотри: 'HTTP Crash Course' — Traversy Media (YouTube). Выпиши методы GET/POST/PUT/DELETE и коды 200/201/400/401/404/500.",
+        instruction:
+          "Смотри: 'HTTP Crash Course' — Traversy Media (YouTube). Выпиши методы GET/POST/PUT/DELETE и коды 200/201/400/401/404/500.",
         resource: "Traversy Media — HTTP Crash Course",
         resourceUrl: "https://youtube.com/watch?v=iYM2zFP3Zn0",
         xpReward: 60,
@@ -230,7 +214,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "api-p2",
         duration: 25,
-        instruction: "Открой Postman. Сделай 3 запроса к публичному API: GET https://jsonplaceholder.typicode.com/posts — посмотри ответ. POST /posts — создай пост. GET /users/1 — получи юзера.",
+        instruction:
+          "Открой Postman. Сделай 3 запроса к публичному API: GET https://jsonplaceholder.typicode.com/posts. POST /posts. GET /users/1.",
         resource: "JSONPlaceholder (публичный API)",
         resourceUrl: "https://jsonplaceholder.typicode.com",
         xpReward: 60,
@@ -250,7 +235,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "en-p1",
         duration: 25,
-        instruction: "Comprehensible input B1: смотри 'English with Lucy' или 'BBC Learning English' на YouTube. Без субтитров. Напиши 3 вопроса по содержанию.",
+        instruction:
+          "Comprehensible input B1: смотри 'English with Lucy' или 'BBC Learning English' на YouTube. Без субтитров. Напиши 3 вопроса по содержанию.",
         resource: "English with Lucy (YouTube)",
         resourceUrl: "https://youtube.com/@EnglishwithLucy",
         xpReward: 45,
@@ -260,7 +246,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "en-p2",
         duration: 25,
-        instruction: "Shadowing A2/B1: выбери любой эпизод 'Culips ESL Podcast'. Слушай 2 мин → повтори → запиши голос. Сравни произношение.",
+        instruction:
+          "Shadowing A2/B1: выбери любой эпизод 'Culips ESL Podcast'. Слушай 2 мин → повтори → запиши голос. Сравни произношение.",
         resource: "Culips ESL Podcast",
         resourceUrl: "https://culips.com",
         xpReward: 45,
@@ -270,7 +257,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "en-p3",
         duration: 25,
-        instruction: "Диктант: включи 'VOA Learning English' (Special English — медленный темп, разные спикеры). Пиши текст на слух. Цель: менее 10 ошибок.",
+        instruction:
+          "Диктант: включи 'VOA Learning English' (Special English). Пиши текст на слух. Цель: менее 10 ошибок.",
         resource: "VOA Learning English",
         resourceUrl: "https://learningenglish.voanews.com",
         xpReward: 45,
@@ -280,7 +268,8 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "en-p4",
         duration: 25,
-        instruction: "Learning Log: напиши 5–10 предложений на английском — что изучил сегодня по SQL и API. Используй новые слова из диктанта.",
+        instruction:
+          "Learning Log: напиши 5–10 предложений на английском — что изучил сегодня по SQL и API. Используй новые слова из диктанта.",
         xpReward: 45,
         coinsReward: 9,
         completed: false,
@@ -298,9 +287,11 @@ const TODAY_TASKS: DayTask[] = [
       {
         id: "li-p1",
         duration: 25,
-        instruction: "Найди 5 профилей 'Junior System Analyst' в LinkedIn (фильтр: США). Выпиши: 3 идеи для headline, 2 идеи для секции About, какие навыки они указывают.",
+        instruction:
+          "Найди 5 профилей 'Junior System Analyst' в LinkedIn (фильтр: США). Выпиши: 3 идеи для headline, 2 идеи для About, какие навыки они указывают.",
         resource: "LinkedIn Search",
-        resourceUrl: "https://linkedin.com/search/results/people/?keywords=junior+system+analyst",
+        resourceUrl:
+          "https://linkedin.com/search/results/people/?keywords=junior+system+analyst",
         xpReward: 90,
         coinsReward: 18,
         completed: false,
@@ -308,15 +299,6 @@ const TODAY_TASKS: DayTask[] = [
     ],
   },
 ];
-
-const INITIAL_GOALS: Record<string, Goal> = {
-  sql:       { category: "sql",       dailyMinutes: 75,  xpPerMinute: 2,   priority: 1 },
-  "rest-api":{ category: "rest-api",  dailyMinutes: 50,  xpPerMinute: 2,   priority: 1 },
-  english:   { category: "english",   dailyMinutes: 100, xpPerMinute: 1.5, priority: 1 },
-  linkedin:  { category: "linkedin",  dailyMinutes: 25,  xpPerMinute: 3,   priority: 2 },
-  bpmn:      { category: "bpmn",      dailyMinutes: 50,  xpPerMinute: 2,   priority: 2 },
-  jira:      { category: "jira",      dailyMinutes: 25,  xpPerMinute: 2,   priority: 3 },
-};
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -439,11 +421,9 @@ export const useAppStore = create<AppState>()(
           i === pomoIdx ? { ...p, completed: true } : p
         );
         const allDone = newPomodoros.every((p) => p.completed);
-
         const newTasks = state.dayTasks.map((t, i) =>
           i === taskIdx ? { ...t, pomodoros: newPomodoros, completed: allDone } : t
         );
-
         const xpGain = pomo.xpReward;
         const coinsGain = pomo.coinsReward;
         const newTotalXP = state.totalXP + xpGain;
@@ -485,10 +465,7 @@ export const useAppStore = create<AppState>()(
 
       updateGoal: (category, patch) =>
         set((state) => ({
-          goals: {
-            ...state.goals,
-            [category]: { ...state.goals[category], ...patch },
-          },
+          goals: { ...state.goals, [category]: { ...state.goals[category], ...patch } },
         })),
 
       addGoal: (category, goal) =>

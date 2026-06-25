@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal } from "../types";
 // Re-export for backward compatibility — SkillTreePage, DashboardPage, SettingsPage не трогаем
 export type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal };
+import { INITIAL_SKILLS } from "../content";
 
 interface AppState {
   name: string;
@@ -34,111 +35,6 @@ interface AppState {
   removeGoal: (category: string) => void;
 }
 
-const INITIAL_SKILLS: Skill[] = [
-  {
-    id: "sql",
-    name: "SQL",
-    category: "System Analysis",
-    level: 0,
-    maxLevel: 5,
-    xp: 0,
-    xpToNext: 150,
-    description: "Structured Query Language — основа технических собеседований",
-    unlocked: [],
-    locked: [
-      "SELECT / WHERE / ORDER BY",
-      "GROUP BY / HAVING",
-      "JOIN (все виды)",
-      "Подзапросы",
-      "Window Functions",
-      "Execution Plan",
-    ],
-    dependencies: [],
-    color: "#6d28d9",
-  },
-  {
-    id: "rest-api",
-    name: "REST / API",
-    category: "System Analysis",
-    level: 0,
-    maxLevel: 4,
-    xp: 0,
-    xpToNext: 120,
-    description: "HTTP методы, коды ответов, Postman, Swagger, JSON",
-    unlocked: [],
-    locked: [
-      "HTTP методы GET/POST/PUT/DELETE",
-      "Коды ответов",
-      "Postman",
-      "Swagger / OpenAPI",
-      "JSON / XML",
-    ],
-    dependencies: [],
-    color: "#0891b2",
-  },
-  {
-    id: "english",
-    name: "English",
-    category: "Soft Skills",
-    level: 0,
-    maxLevel: 6,
-    xp: 0,
-    xpToNext: 180,
-    description: "Цель: C1. Comprehensible input + shadowing + диктанты",
-    unlocked: ["A2 — базовый уровень"],
-    locked: [
-      "B1 Reading / Listening",
-      "B1 Speaking (shadowing)",
-      "B2 Technical vocabulary",
-      "B2 → C1 переход",
-      "C1 свободный",
-    ],
-    dependencies: [],
-    color: "#059669",
-  },
-  {
-    id: "linkedin",
-    name: "LinkedIn",
-    category: "Personal Brand",
-    level: 0,
-    maxLevel: 3,
-    xp: 0,
-    xpToNext: 90,
-    description: "Профиль Junior SA для рынка США",
-    unlocked: [],
-    locked: ["Аудит профиля", "Headline + About", "Network building", "Контент-стратегия"],
-    dependencies: [],
-    color: "#0a66c2",
-  },
-  {
-    id: "bpmn",
-    name: "BPMN / UML",
-    category: "System Analysis",
-    level: 0,
-    maxLevel: 4,
-    xp: 0,
-    xpToNext: 120,
-    description: "Моделирование процессов и систем — Draw.io, Camunda",
-    unlocked: [],
-    locked: ["BPMN нотация", "UML Use Case", "UML Sequence", "Camunda / Draw.io"],
-    dependencies: ["sql"],
-    color: "#b45309",
-  },
-  {
-    id: "jira",
-    name: "Jira / Confluence",
-    category: "System Analysis",
-    level: 0,
-    maxLevel: 3,
-    xp: 0,
-    xpToNext: 80,
-    description: "Задачи, баг-репорты, документация",
-    unlocked: [],
-    locked: ["Jira — задачи и эпики", "Баг-репорты", "Confluence документация"],
-    dependencies: [],
-    color: "#1d4ed8",
-  },
-];
 
 const INITIAL_GOALS: Record<string, Goal> = {
   sql:        { category: "sql",       dailyMinutes: 75,  xpPerMinute: 2,   priority: 1 },

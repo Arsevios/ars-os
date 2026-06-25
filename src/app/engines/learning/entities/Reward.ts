@@ -1,4 +1,4 @@
-import type { Pomodoro, DayTask } from "../types";
+import type { Pomodoro, DayTask } from "../../../../types";
 
 // ─── Константы ───────────────────────────────────────────────────────────────
 
@@ -6,7 +6,7 @@ export const XP_PER_LEVEL = 500;
 export const SKILL_XP_GROWTH_FACTOR = 1.4;
 export const TASK_COMPLETION_BONUS_RATE = 0.1; // 10% от награды задачи
 
-// ─── Уровень персонажа ───────────────────────────────────────────────────────
+// ─── Уровень персонажа ────────────────────────────────────────────────────────
 
 export function calculateLevel(totalXP: number): number {
   return Math.floor(totalXP / XP_PER_LEVEL);
@@ -27,7 +27,7 @@ export function calculatePomodoroCoins(pomo: Pomodoro): number {
   return pomo.coinsReward;
 }
 
-// ─── Бонус за завершение задачи ──────────────────────────────────────────────
+// ─── Бонус за завершение задачи ───────────────────────────────────────────────
 
 export function calculateTaskCompletionBonus(
   task: DayTask
@@ -40,7 +40,7 @@ export function calculateTaskCompletionBonus(
   };
 }
 
-// ─── Бонус стрика ────────────────────────────────────────────────────────────
+// ─── Бонус стрика ─────────────────────────────────────────────────────────────
 
 export function calculateStreakMultiplier(streak: number): number {
   if (streak >= 7) return 1.5;
@@ -48,7 +48,7 @@ export function calculateStreakMultiplier(streak: number): number {
   return 1.0;
 }
 
-// ─── Рост XP до следующего уровня скилла ─────────────────────────────────────
+// ─── Рост XP до следующего уровня скилла ──────────────────────────────────────
 
 export function calculateNextSkillXPThreshold(currentXPToNext: number): number {
   return Math.round(currentXPToNext * SKILL_XP_GROWTH_FACTOR);

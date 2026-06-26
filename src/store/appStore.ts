@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal } from "../types";
+import { INITIAL_SKILLS } from "../content";
 // Re-export for backward compatibility — SkillTreePage, DashboardPage, SettingsPage не трогаем
 export type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal };
-import { INITIAL_SKILLS } from "../content";
+
 
 interface AppState {
   name: string;

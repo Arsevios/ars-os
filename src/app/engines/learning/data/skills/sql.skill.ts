@@ -1,4 +1,4 @@
-import type { Skill, Step } from '../../entities';
+import type { Skill, Step, Module, Lesson } from '../../entities';
 
 // ===================================================================================
 // MODULE 1 — SQL Foundations
@@ -674,10 +674,10 @@ const module3: Module = {
 export const sqlSkill: Skill = {
   id: 'sql',
   name: 'SQL',
-  category: 'Data Analysis',
-  description:
-    'Go from zero prior knowledge to confidently querying a real database: selecting and filtering data, sorting and aggregating it, and combining multiple tables with joins — practiced entirely in a free browser-based tool, no installation required.',
+  category: 'System Analysis',
+  description: 'Go from zero prior knowledge...',
   modules: [module1, module2, module3],
   dependencies: [],
   maxLevel: 5,
+  color: '#1e1b4b',
 };

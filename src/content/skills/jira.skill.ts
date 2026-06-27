@@ -6,7 +6,7 @@ export const jiraInitialProgress: SkillProgress = {
   category: "System Analysis",
   description: "Задачи, баг-репорты, документация",
   dependencies: [],
-  color: "#1d4ed8",
+  color: '#7c3aed',
   maxLevel: 3,
   level: 0,
   xp: 0,

@@ -171,10 +171,10 @@ export const getNextStep = (
 // Skips steps already completed in UserProgress.
 // Sets stepIds on DayTask to link back to learning content.
 // ---------------------------------------------------------------------------
-
+const POMODORO_DURATION = 25;
 const stepToPomodoro = (step: Step): Pomodoro => ({
   id: `pomo-${step.id}`,
-  duration: step.estimatedMinutes,
+  duration: POMODORO_DURATION,
   instruction: step.instruction,
   resource: step.resource?.title,
   resourceUrl: step.resource?.url,

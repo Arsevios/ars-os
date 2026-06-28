@@ -35,28 +35,39 @@ export default function DashboardPage() {
   resetDayIfNeeded, generateDayTasks,
 } = useAppStore();
 
-  const [activeTask, setActiveTask] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+const [activeTask, setActiveTask] = useState<string | null>(null);
+const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    resetDayIfNeeded();
-    // Generate tasks on first load if none exist yet
-    if (dayTasks.length === 0) {
-      generateDayTasks();
-    }
-  }, []);
+useEffect(() => {
+  resetDayIfNeeded();
 
-  useEffect(() => {
-    if (session.active) {
-      timerRef.current = setInterval(() => tickTimer(), 1000);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [session.active]);
+  if (dayTasks.length === 0) {
+    generateDayTasks();
+  }
 
-  const completedTasks = dayTasks.filter((t) => t.completed).length;
-  const xpPct = Math.min((todayXP / xpGoalToday) * 100, 100);
+  if (Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+}, []);
+
+useEffect(() => {
+  if (session.active) {
+    timerRef.current = setInterval(() => tickTimer(), 1000);
+  } else {
+    if (timerRef.current) clearInterval(timerRef.current);
+  }
+
+  return () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+}, [session.active]);
+
+const completedTasks = dayTasks.filter((t) => t.completed).length;
+
+const xpPct =
+  xpGoalToday > 0
+    ? Math.min((todayXP / xpGoalToday) * 100, 100)
+    : 0;
 
   return (
     <div className={styles.page}>

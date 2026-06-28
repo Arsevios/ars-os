@@ -209,31 +209,45 @@ export const useAppStore = create<AppState>()(
       // tickTimer
       // ---------------------------------------------------------------
       tickTimer: () => {
-        const s = get().session;
-        if (!s.active) return;
-        if (s.secondsLeft > 0) {
-          set((state) => ({
-            session: { ...state.session, secondsLeft: state.session.secondsLeft - 1 },
-          }));
-        } else {
-          if (s.phase === "work") {
-            const cycles = s.completedCycles + 1;
-            const breakDuration = cycles % 4 === 0 ? 30 : 5;
-            set((state) => ({
-              session: {
-                ...state.session,
-                phase: cycles % 4 === 0 ? "long-break" : "short-break",
-                secondsLeft: breakDuration * 60,
-                completedCycles: cycles,
-              },
-            }));
-          } else {
-            set((state) => ({
-              session: { ...state.session, active: false },
-            }));
-          }
-        }
-      },
+  const s = get().session;
+  if (!s.active) return;
+  if (s.secondsLeft > 0) {
+    set((state) => ({
+      session: { ...state.session, secondsLeft: state.session.secondsLeft - 1 },
+    }));
+  } else {
+    if (s.phase === "work") {
+      const cycles = s.completedCycles + 1;
+      const isLong = cycles % 4 === 0;
+      const breakDuration = isLong ? 30 : 5;
+      // Notification
+      if (Notification.permission === "granted") {
+        new Notification(isLong ? "🌿 Длинный перерыв — 30 минут!" : "☕ Перерыв — 5 минут!");
+      }
+      set((state) => ({
+        session: {
+          ...state.session,
+          phase: isLong ? "long-break" : "short-break",
+          secondsLeft: breakDuration * 60,
+          completedCycles: cycles,
+        },
+      }));
+    } else {
+      // Break ended — auto-start next work session
+      if (Notification.permission === "granted") {
+        new Notification("🍅 Время работать — 25 минут!");
+      }
+      set((state) => ({
+        session: {
+          ...state.session,
+          phase: "work",
+          secondsLeft: 25 * 60,
+          active: true,
+        },
+      }));
+    }
+  }
+},
 
       // ---------------------------------------------------------------
       // skipToBreak
@@ -257,7 +271,22 @@ export const useAppStore = create<AppState>()(
       // ---------------------------------------------------------------
       endSession: () => {
         set((state) => ({
-          session: { ...state.session, active: false, taskId: null, pomodoroId: null },
+          session: (() => {
+  const cycles = state.session.completedCycles + 1;
+  const isLong = cycles % 4 === 0;
+  if (Notification.permission === "granted") {
+    new Notification(isLong ? "🌿 Длинный перерыв — 30 минут!" : "☕ Перерыв — 5 минут!");
+  }
+  return {
+    ...state.session,
+    active: true,
+    phase: isLong ? "long-break" : "short-break",
+    secondsLeft: (isLong ? 30 : 5) * 60,
+    completedCycles: cycles,
+    taskId: null,
+    pomodoroId: null,
+  };
+})(),
         }));
       },
 

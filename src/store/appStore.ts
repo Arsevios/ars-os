@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal } from "../types";
+import type {
+  Skill, SkillProgress, SkillDefinition,
+  Pomodoro, DayTask, PomodoroSession, Goal,
+} from "../types";
 import { INITIAL_SKILLS } from "../content";
 
 // Re-export for backward compatibility
@@ -13,21 +16,49 @@ import { englishSkill } from "../app/engines/learning/data/skills/english.skill"
 import { bpmnSkill }    from "../app/engines/learning/data/skills/bpmn.skill";
 import { jiraSkill }    from "../app/engines/learning/data/skills/jira.skill";
 
-// Adapter and engine
-import { buildUserProgress } from "../app/engines/learning/adapters/buildUserProgress";
-import { buildDayTasks }     from "../app/engines/learning/engine/LearningEngine";
+// Engine
+import {
+  buildDayTasks,
+  applyStepCompletion,
+  computeSkillStatuses,
+  type SkillStatus,
+} from "../app/engines/learning/engine/LearningEngine";
+
+import type { UserProgress } from "../app/engines/learning/entities";
+import { createEmptyProgress } from "../app/engines/learning/entities";
 
 // Static registry — ordered by default priority
 const SKILL_DEFINITIONS = [sqlSkill, restApiSkill, englishSkill, bpmnSkill, jiraSkill];
+
+// Step lookup — maps stepId → Step for applyStepCompletion
+import type { Step } from "../app/engines/learning/entities";
+
+const ALL_STEPS: Record<string, { step: Step; skillId: string }> =
+  SKILL_DEFINITIONS.reduce<Record<string, { step: Step; skillId: string }>>(
+    (acc, skill) => {
+      skill.modules.forEach(m =>
+        m.lessons.forEach(l =>
+          l.steps.forEach(s => {
+            acc[s.id] = { step: s, skillId: skill.id };
+          }),
+        ),
+      );
+      return acc;
+    },
+    {},
+  );
 
 // ---------------------------------------------------------------------------
 // AppState
 // ---------------------------------------------------------------------------
 
 interface AppState {
+  // Identity
   name: string;
   title: string;
   dayStart: string;
+
+  // XP & coins (summary counters — source of truth is userProgress)
   totalXP: number;
   todayXP: number;
   totalCoins: number;
@@ -36,12 +67,19 @@ interface AppState {
   streak: number;
   xpGoalToday: number;
   coinsGoalToday: number;
-  skills: Skill[];
+
+  // Learning content state
+  skills: Skill[];                   // SkillProgress[] for XP bar display
+  userProgress: UserProgress;        // authoritative step-level progress
+  skillStatuses: SkillStatus[];      // computed by LearningEngine, consumed by SkillTree
+
+  // Daily work
   dayTasks: DayTask[];
   session: PomodoroSession;
   lastResetDate: string;
   goals: Record<string, Goal>;
 
+  // Actions
   completePomodoro: (taskId: string, pomodoroId: string) => void;
   startPomodoro: (taskId: string, pomodoroId: string) => void;
   tickTimer: () => void;
@@ -88,6 +126,8 @@ export const useAppStore = create<AppState>()(
       xpGoalToday: 540,
       coinsGoalToday: 108,
       skills: INITIAL_SKILLS,
+      userProgress: createEmptyProgress(),
+      skillStatuses: [],
       dayTasks: [],
       lastResetDate: todayISO(),
       goals: INITIAL_GOALS,
@@ -102,49 +142,46 @@ export const useAppStore = create<AppState>()(
 
       // ---------------------------------------------------------------
       // generateDayTasks
-      // Builds today's tasks from skill definitions + current progress.
-      // Called on app start and after day reset.
+      // Builds today's tasks from skill definitions + persisted progress.
       // ---------------------------------------------------------------
       generateDayTasks: () => {
         const state = get();
-        const userProgress = buildUserProgress(
-          state.skills,
-          state.totalXP,
-          state.totalCoins,
-        );
         const tasks = buildDayTasks(
           SKILL_DEFINITIONS,
-          userProgress,
+          state.userProgress,
           state.goals,
           5,
         );
-        set({ dayTasks: tasks });
+        const statuses = computeSkillStatuses(
+          SKILL_DEFINITIONS,
+          state.userProgress,
+        );
+        set({ dayTasks: tasks, skillStatuses: statuses });
       },
 
       // ---------------------------------------------------------------
       // resetDayIfNeeded
-      // Resets daily counters and regenerates tasks on a new day.
       // ---------------------------------------------------------------
       resetDayIfNeeded: () => {
         const today = todayISO();
-        if (get().lastResetDate !== today) {
-          const state = get();
-          const userProgress = buildUserProgress(
-            state.skills,
-            state.totalXP,
-            state.totalCoins,
-          );
+        const state = get();
+        if (state.lastResetDate !== today) {
           const tasks = buildDayTasks(
             SKILL_DEFINITIONS,
-            userProgress,
+            state.userProgress,
             state.goals,
             5,
+          );
+          const statuses = computeSkillStatuses(
+            SKILL_DEFINITIONS,
+            state.userProgress,
           );
           set({
             todayXP: 0,
             todayCoins: 0,
             lastResetDate: today,
             dayTasks: tasks,
+            skillStatuses: statuses,
           });
         }
       },
@@ -181,7 +218,7 @@ export const useAppStore = create<AppState>()(
         } else {
           if (s.phase === "work") {
             const cycles = s.completedCycles + 1;
-            const breakDuration = cycles % 4 === 0 ? 15 : 5;
+            const breakDuration = cycles % 4 === 0 ? 30 : 5;
             set((state) => ({
               session: {
                 ...state.session,
@@ -204,7 +241,7 @@ export const useAppStore = create<AppState>()(
       skipToBreak: () => {
         const s = get().session;
         const cycles = s.completedCycles + 1;
-        const breakDuration = cycles % 4 === 0 ? 15 : 5;
+        const breakDuration = cycles % 4 === 0 ? 30 : 5;
         set((state) => ({
           session: {
             ...state.session,
@@ -226,8 +263,14 @@ export const useAppStore = create<AppState>()(
 
       // ---------------------------------------------------------------
       // completePomodoro
-      // Marks pomodoro done, grants XP + coins, updates skill progress,
-      // then regenerates day tasks to reflect new progress.
+      //
+      // 1. Mark pomodoro done in dayTasks
+      // 2. Look up the Step via task.stepIds
+      // 3. Call LearningEngine.applyStepCompletion → new UserProgress
+      // 4. Award XP + coins to summary counters
+      // 5. Update SkillProgress (XP bar display)
+      // 6. Recompute skillStatuses
+      // 7. Regenerate dayTasks from new progress
       // ---------------------------------------------------------------
       completePomodoro: (taskId, pomodoroId) => {
         const state = get();
@@ -242,7 +285,7 @@ export const useAppStore = create<AppState>()(
           i === pomoIdx ? { ...p, completed: true } : p,
         );
         const allDone = newPomodoros.every((p) => p.completed);
-        const newTasks = state.dayTasks.map((t, i) =>
+        const updatedTasks = state.dayTasks.map((t, i) =>
           i === taskIdx ? { ...t, pomodoros: newPomodoros, completed: allDone } : t,
         );
 
@@ -250,8 +293,35 @@ export const useAppStore = create<AppState>()(
         const coinsGain = pomo.coinsReward;
         const newTotalXP = state.totalXP + xpGain;
 
+        // Apply step completion to UserProgress via LearningEngine
+        let newUserProgress = state.userProgress;
+        for (const stepId of task.stepIds) {
+          const entry = ALL_STEPS[stepId];
+          if (entry) {
+            newUserProgress = applyStepCompletion(
+              entry.step,
+              entry.skillId,
+              newUserProgress,
+            );
+          }
+        }
+
+        // Recompute skill statuses and regenerate tasks from new progress
+        const newStatuses = computeSkillStatuses(SKILL_DEFINITIONS, newUserProgress);
+        const newDayTasks = buildDayTasks(
+          SKILL_DEFINITIONS,
+          newUserProgress,
+          state.goals,
+          5,
+        ).map(t =>
+          // Preserve completion state of tasks already done today
+          updatedTasks.find(u => u.id === t.id) ?? t,
+        );
+
         set({
-          dayTasks: newTasks,
+          dayTasks: newDayTasks,
+          userProgress: newUserProgress,
+          skillStatuses: newStatuses,
           todayXP: state.todayXP + xpGain,
           todayCoins: state.todayCoins + coinsGain,
           totalXP: newTotalXP,
@@ -260,11 +330,12 @@ export const useAppStore = create<AppState>()(
           session: { ...state.session, active: false, taskId: null, pomodoroId: null },
         });
 
+        // Keep SkillProgress XP bars in sync
         get().addSkillXP(task.skillId, xpGain);
       },
 
       // ---------------------------------------------------------------
-      // addSkillXP
+      // addSkillXP — updates SkillProgress XP bars (display only)
       // ---------------------------------------------------------------
       addSkillXP: (skillId, xp) => {
         set((state) => ({

@@ -4,8 +4,6 @@
 
 // ---------------------------------------------------------------------------
 // SkillDefinition — static learning content
-// Identity, rules, structure metadata. No runtime state.
-// Extended with modules[] in src/app/engines/learning/entities/Skill.ts
 // ---------------------------------------------------------------------------
 
 export interface SkillDefinition {
@@ -21,11 +19,6 @@ export interface SkillDefinition {
 
 // ---------------------------------------------------------------------------
 // SkillProgress — runtime user state stored in Zustand
-//
-// Currently carries SkillDefinition fields as well because the store has not
-// yet been split into separate definition + progress layers.
-// Once the content layer (src/content/) is complete and the store reads
-// definitions separately, the duplicated fields below will be removed.
 // ---------------------------------------------------------------------------
 
 export interface SkillProgress {
@@ -37,10 +30,10 @@ export interface SkillProgress {
   dependencies: string[];
   color: string;
 
-  // Rules (static, but needed by addSkillXP logic in store)
+  // Rules
   maxLevel: number;
 
-  // Runtime progress (changes on every completed pomodoro)
+  // Runtime progress
   level: number;
   xp: number;
   xpToNext: number;
@@ -48,12 +41,12 @@ export interface SkillProgress {
   locked: string[];
 }
 
-// Backward-compatibility alias — appStore and SkillTreePage import "Skill".
-// Remove after full migration to SkillProgress.
+// Backward-compatibility alias
 export type Skill = SkillProgress;
 
 // ---------------------------------------------------------------------------
-// Pomodoro
+// Pomodoro — generic timer/work session unit
+// Intentionally NOT coupled to learning Step.
 // ---------------------------------------------------------------------------
 
 export interface Pomodoro {
@@ -69,6 +62,8 @@ export interface Pomodoro {
 
 // ---------------------------------------------------------------------------
 // DayTask
+// stepIds links this task to the learning Step(s) it covers.
+// Kept separate from Pomodoro to preserve Pomodoro as a generic concept.
 // ---------------------------------------------------------------------------
 
 export interface DayTask {
@@ -79,6 +74,7 @@ export interface DayTask {
   coinsReward: number;
   completed: boolean;
   pomodoros: Pomodoro[];
+  stepIds: string[];          // learning step IDs this task covers
 }
 
 // ---------------------------------------------------------------------------

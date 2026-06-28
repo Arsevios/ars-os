@@ -1,37 +1,10 @@
 import { useAppStore } from "../../store/appStore";
-import type { SkillProgress } from "../../store/appStore";
+import type { SkillStatus } from "../../app/engines/learning/engine/LearningEngine";
 import styles from "./SkillTreePage.module.css";
 
-// Static skill definitions — learning content, never changes at runtime
-import { sqlSkill }     from "../../app/engines/learning/data/skills/sql.skill";
-import { restApiSkill } from "../../app/engines/learning/data/skills/rest-api.skill";
-import { englishSkill } from "../../app/engines/learning/data/skills/english.skill";
-import { bpmnSkill }    from "../../app/engines/learning/data/skills/bpmn.skill";
-import { jiraSkill }    from "../../app/engines/learning/data/skills/jira.skill";
-
-// Adapter — outside the UI, separate responsibility
-import { buildUserProgress } from "../../app/engines/learning/adapters/buildUserProgress";
-
-// LearningEngine — pure domain logic
-import {
-  getSkillStatus,
-  type SkillStatus,
-} from "../../app/engines/learning/engine/LearningEngine";
-
-// Entity types
-import type { Skill as SkillDefinition } from "../../app/engines/learning/entities";
-
 // ---------------------------------------------------------------------------
-// Static registry
+// Tree structure — defines display grouping only
 // ---------------------------------------------------------------------------
-
-const SKILL_DEFINITIONS: Record<string, SkillDefinition> = {
-  sql:        sqlSkill,
-  "rest-api": restApiSkill,
-  english:    englishSkill,
-  bpmn:       bpmnSkill,
-  jira:       jiraSkill,
-};
 
 const TREE_STRUCTURE = [
   {
@@ -47,18 +20,23 @@ const TREE_STRUCTURE = [
 ];
 
 // ---------------------------------------------------------------------------
-// Page — reads store, builds UserProgress via adapter, calls LearningEngine
+// Page — reads pre-computed skillStatuses from store
+// No LearningEngine calls. No UserProgress. No skill definitions.
 // ---------------------------------------------------------------------------
 
 export default function SkillTreePage() {
-  const { skills, name, level, totalXP, totalCoins } = useAppStore();
+  const { name, level, totalXP, skillStatuses, generateDayTasks } = useAppStore();
 
-  const skillProgressMap = Object.fromEntries(
-    skills.map((s: SkillProgress) => [s.id, s]),
+  // Build lookup map: skillId → SkillStatus
+  const statusMap: Record<string, SkillStatus> = Object.fromEntries(
+    skillStatuses.map(s => [s.skillId, s]),
   );
 
-  // Adapter converts store shape → LearningEngine shape
-  const userProgress = buildUserProgress(skills, totalXP, totalCoins);
+  // Generate tasks on first render if skillStatuses is empty
+  // (e.g. first app load before Dashboard has called generateDayTasks)
+  if (skillStatuses.length === 0) {
+    generateDayTasks();
+  }
 
   return (
     <div className={styles.page}>
@@ -85,21 +63,9 @@ export default function SkillTreePage() {
             </div>
             <div className={styles.branchSkills}>
               {branch.skills.map((id) => {
-                const definition = SKILL_DEFINITIONS[id];
-                const progress = skillProgressMap[id];
-                if (!definition || !progress) return null;
-
-                // All calculations via LearningEngine — never in the component
-                const status = getSkillStatus(definition, userProgress);
-
-                return (
-                  <SkillCard
-                    key={id}
-                    definition={definition}
-                    progress={progress}
-                    status={status}
-                  />
-                );
+                const status = statusMap[id];
+                if (!status) return null;
+                return <SkillCard key={id} status={status} />;
               })}
             </div>
           </div>
@@ -110,39 +76,34 @@ export default function SkillTreePage() {
 }
 
 // ---------------------------------------------------------------------------
-// SkillCard — pure presentation, receives data, renders it
+// SkillCard — pure presentation
+// Receives one SkillStatus object. Renders it. Nothing else.
 // ---------------------------------------------------------------------------
 
-interface SkillCardProps {
-  definition: SkillDefinition;
-  progress: SkillProgress;
-  status: SkillStatus;
-}
-
-function SkillCard({ definition, progress, status }: SkillCardProps) {
-  const pct = Math.min((progress.xp / progress.xpToNext) * 100, 100);
-  const isLocked = status.availableLessons.length === 0 && progress.level === 0;
+function SkillCard({ status }: { status: SkillStatus }) {
+  const pct = Math.min((status.xp / status.xpToNext) * 100, 100);
+  const isLocked = status.availableLessons.length === 0 && status.level === 0;
 
   return (
     <div
       className={`${styles.card} ${isLocked ? styles.cardLocked : ""}`}
-      style={{ borderTopColor: definition.color }}
+      style={{ borderTopColor: status.color }}
     >
       {/* Header */}
       <div className={styles.cardTop}>
         <div>
-          <div className={styles.skillName}>{definition.name}</div>
-          <div className={styles.skillDesc}>{definition.description}</div>
+          <div className={styles.skillName}>{status.name}</div>
+          <div className={styles.skillDesc}>{status.description}</div>
         </div>
         <div
           className={styles.levelBadge}
           style={{
-            background: `${definition.color}22`,
-            border: `1px solid ${definition.color}44`,
+            background: `${status.color}22`,
+            border: `1px solid ${status.color}44`,
           }}
         >
-          <span style={{ color: definition.color }}>Lv.{progress.level}</span>
-          <span className={styles.levelMax}>/{definition.maxLevel}</span>
+          <span style={{ color: status.color }}>Lv.{status.level}</span>
+          <span className={styles.levelMax}>/{status.maxLevel}</span>
         </div>
       </div>
 
@@ -151,25 +112,22 @@ function SkillCard({ definition, progress, status }: SkillCardProps) {
         <div className={styles.xpBar}>
           <div
             className={styles.xpFill}
-            style={{ width: `${pct}%`, background: definition.color }}
+            style={{ width: `${pct}%`, background: status.color }}
           />
         </div>
         <span className={styles.xpText}>
-          {progress.xp} / {progress.xpToNext} XP
+          {status.xp} / {status.xpToNext} XP
           {status.completionPercent > 0 && (
             <> · {status.completionPercent}% complete</>
           )}
         </span>
       </div>
 
-      {/* Next lesson from LearningEngine */}
+      {/* Next lesson */}
       {status.nextLesson && (
         <div className={styles.topics}>
           <div className={styles.topicUnlocked}>
-            <span
-              className={styles.topicIcon}
-              style={{ color: definition.color }}
-            >
+            <span className={styles.topicIcon} style={{ color: status.color }}>
               ▶
             </span>
             <span>{status.nextLesson.title}</span>
@@ -177,32 +135,25 @@ function SkillCard({ definition, progress, status }: SkillCardProps) {
         </div>
       )}
 
-      {/* Topics — unlocked and locked from store */}
-      <div className={styles.topics}>
-        {progress.unlocked.map((topic: string) => (
-          <div key={topic} className={styles.topicUnlocked}>
-            <span
-              className={styles.topicIcon}
-              style={{ color: definition.color }}
-            >
-              ✔
+      {/* Lesson progress */}
+      {status.totalLessons > 0 && (
+        <div className={styles.topics}>
+          <div className={styles.topicLocked}>
+            <span className={styles.topicIcon}>◉</span>
+            <span>
+              {status.completedLessons}/{status.totalLessons} lessons
             </span>
-            <span>{topic}</span>
           </div>
-        ))}
-        {progress.locked.map((topic: string) => (
-          <div key={topic} className={styles.topicLocked}>
-            <span className={styles.topicIcon}>▣</span>
-            <span>{topic}</span>
-          </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Locked badge */}
-      {isLocked && definition.dependencies.length > 0 && (
-        <div className={styles.topicLocked}>
-          <span className={styles.topicIcon}>🔒</span>
-          <span>Requires: {definition.dependencies.join(", ")}</span>
+      {isLocked && (
+        <div className={styles.topics}>
+          <div className={styles.topicLocked}>
+            <span className={styles.topicIcon}>🔒</span>
+            <span>Locked</span>
+          </div>
         </div>
       )}
     </div>

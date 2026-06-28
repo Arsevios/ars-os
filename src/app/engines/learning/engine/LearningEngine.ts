@@ -1,12 +1,7 @@
 // =============================================================================
 // src/app/engines/learning/engine/LearningEngine.ts
 //
-// Pure domain service — the heart of ARS OS learning system.
-//
-// Rules:
-//   - NO React, NO Zustand, NO localStorage, NO side effects
-//   - Pure functions only: input → new object, never mutates
-//   - Imports only from src/types and ../entities
+// Pure domain service. No React, no Zustand, no side effects.
 // =============================================================================
 
 import type { DayTask, Pomodoro, Goal } from '../../../../types';
@@ -48,12 +43,19 @@ export interface LessonStatus {
 
 export interface SkillStatus {
   skillId: string;
+  name: string;
+  category: string;
+  description: string;
+  color: string;
+  maxLevel: number;
   level: number;
   xp: number;
   xpToNext: number;
   completionPercent: number;
   nextLesson: Lesson | null;
   availableLessons: LessonStatus[];
+  totalLessons: number;
+  completedLessons: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -165,14 +167,9 @@ export const getNextStep = (
 // ---------------------------------------------------------------------------
 // 6. buildDayTasks
 //
-// Generates today's DayTask list sorted by goal priority.
-// For each skill (sorted by priority from goals):
-//   1. Find the next lesson
-//   2. Find the next step
-//   3. Convert step → Pomodoro → DayTask
-//
-// maxTasks: hard cap on number of tasks (default 5)
-// goals: used for priority ordering — lower number = higher priority
+// Generates today's tasks sorted by goal priority.
+// Skips steps already completed in UserProgress.
+// Sets stepIds on DayTask to link back to learning content.
 // ---------------------------------------------------------------------------
 
 const stepToPomodoro = (step: Step): Pomodoro => ({
@@ -198,6 +195,7 @@ const stepToDayTask = (
   coinsReward: step.baseCoins,
   completed: false,
   pomodoros: [stepToPomodoro(step)],
+  stepIds: [step.id],            // links DayTask → Step without coupling Pomodoro
 });
 
 export const buildDayTasks = (
@@ -206,8 +204,7 @@ export const buildDayTasks = (
   goals: Record<string, Goal>,
   maxTasks = 5,
 ): DayTask[] => {
-  // Sort skills by goal priority (lower number = higher priority)
-  // Skills without a goal go last
+  // Sort by goal priority (lower = higher priority), skills without goal go last
   const sorted = [...skills].sort((a, b) => {
     const pa = goals[a.id]?.priority ?? 99;
     const pb = goals[b.id]?.priority ?? 99;
@@ -222,8 +219,12 @@ export const buildDayTasks = (
     const lesson = getNextLesson(skill, progress);
     if (!lesson) continue;
 
+    // Find next incomplete step — UserProgress.steps drives this
     const step = getNextStep(lesson, progress);
     if (!step) continue;
+
+    // Skip if already in today's task list (idempotent)
+    if (tasks.some(t => t.stepIds.includes(step.id))) continue;
 
     tasks.push(stepToDayTask(step, lesson, skill));
   }
@@ -248,6 +249,7 @@ export const getSkillLevel = (
 
 // ---------------------------------------------------------------------------
 // 8. applyStepCompletion
+// Pure: returns new UserProgress with step marked complete + XP applied.
 // ---------------------------------------------------------------------------
 
 export const applyStepCompletion = (
@@ -255,9 +257,12 @@ export const applyStepCompletion = (
   skillId: string,
   progress: UserProgress,
 ): UserProgress => {
+  // Idempotent — don't double-award XP
+  if (progress.steps[step.id]?.completed) return progress;
+
   const now = todayISO();
 
-  const updatedStepProgress: StepProgress = {
+  const updatedStep: StepProgress = {
     stepId: step.id,
     skillId,
     completed: true,
@@ -279,14 +284,8 @@ export const applyStepCompletion = (
 
   return {
     ...progress,
-    steps: {
-      ...progress.steps,
-      [step.id]: updatedStepProgress,
-    },
-    skillLevels: {
-      ...progress.skillLevels,
-      [skillId]: updatedSkillLevel,
-    },
+    steps: { ...progress.steps, [step.id]: updatedStep },
+    skillLevels: { ...progress.skillLevels, [skillId]: updatedSkillLevel },
     totalXP: progress.totalXP + step.baseXP,
     totalCoins: progress.totalCoins + step.baseCoins,
   };
@@ -311,10 +310,7 @@ export const applyReflection = (
 
   return {
     ...progress,
-    reflections: {
-      ...progress.reflections,
-      [reflectionId]: reflectionAnswer,
-    },
+    reflections: { ...progress.reflections, [reflectionId]: reflectionAnswer },
   };
 };
 
@@ -339,6 +335,8 @@ export const getSkillCompletionPercent = (
 
 // ---------------------------------------------------------------------------
 // 11. getSkillStatus
+// Returns UI-ready status object — includes all fields needed for rendering.
+// Store can cache this and expose it as skillStatuses[].
 // ---------------------------------------------------------------------------
 
 export const getSkillStatus = (
@@ -349,20 +347,42 @@ export const getSkillStatus = (
   const availableLessons = getAvailableLessons(skill, progress);
   const nextLesson = getNextLesson(skill, progress);
   const completionPercent = getSkillCompletionPercent(skill, progress);
+  const allLessons = getAllLessons(skill);
+  const completedLessons = allLessons.filter(l =>
+    isLessonComplete(l, progress),
+  ).length;
 
   return {
     skillId: skill.id,
+    name: skill.name,
+    category: skill.category,
+    description: skill.description,
+    color: skill.color,
+    maxLevel: skill.maxLevel,
     level: skillLevel.level,
     xp: skillLevel.xp,
     xpToNext: skillLevel.xpToNext,
     completionPercent,
     nextLesson,
     availableLessons,
+    totalLessons: allLessons.length,
+    completedLessons,
   };
 };
 
 // ---------------------------------------------------------------------------
-// 12. getDayStats
+// 12. computeSkillStatuses
+// Batch version of getSkillStatus for the store to cache.
+// ---------------------------------------------------------------------------
+
+export const computeSkillStatuses = (
+  skills: Skill[],
+  progress: UserProgress,
+): SkillStatus[] =>
+  skills.map(skill => getSkillStatus(skill, progress));
+
+// ---------------------------------------------------------------------------
+// 13. getDayStats
 // ---------------------------------------------------------------------------
 
 export const getDayStats = (
@@ -372,23 +392,21 @@ export const getDayStats = (
   const today = todayISO();
   const allSteps = skills.flatMap(getAllSteps);
 
-  const completedToday = Object.values(progress.steps).filter(
+  const completedTodaySteps = Object.values(progress.steps).filter(
     sp => sp.completed && sp.completedAt === today,
-  ).length;
+  );
 
-  const xpEarnedToday = Object.values(progress.steps)
-    .filter(sp => sp.completed && sp.completedAt === today)
-    .reduce((sum, sp) => {
-      const step = allSteps.find(s => s.id === sp.stepId);
-      return sum + (step?.baseXP ?? 0);
-    }, 0);
+  const completedToday = completedTodaySteps.length;
 
-  const coinsEarnedToday = Object.values(progress.steps)
-    .filter(sp => sp.completed && sp.completedAt === today)
-    .reduce((sum, sp) => {
-      const step = allSteps.find(s => s.id === sp.stepId);
-      return sum + (step?.baseCoins ?? 0);
-    }, 0);
+  const xpEarnedToday = completedTodaySteps.reduce((sum, sp) => {
+    const step = allSteps.find(s => s.id === sp.stepId);
+    return sum + (step?.baseXP ?? 0);
+  }, 0);
+
+  const coinsEarnedToday = completedTodaySteps.reduce((sum, sp) => {
+    const step = allSteps.find(s => s.id === sp.stepId);
+    return sum + (step?.baseCoins ?? 0);
+  }, 0);
 
   const totalStepsAvailable = skills.reduce((sum, skill) => {
     const lesson = getNextLesson(skill, progress);

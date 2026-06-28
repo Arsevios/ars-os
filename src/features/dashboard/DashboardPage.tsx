@@ -17,29 +17,33 @@ function greeting(name: string) {
   return `Добрый вечер, ${name}`;
 }
 
+// Updated color palette
 const SKILL_COLORS: Record<string, string> = {
-  sql: "#6d28d9",
-  "rest-api": "#0891b2",
-  english: "#059669",
-  linkedin: "#0a66c2",
-  bpmn: "#b45309",
-  jira: "#1d4ed8",
+  sql:        "#1e1b4b",
+  "rest-api": "#0e7490",
+  english:    "#065f46",
+  bpmn:       "#7f1d1d",
+  jira:       "#7c3aed",
 };
 
 export default function DashboardPage() {
   const {
-    name, title, level, totalXP, todayXP, todayCoins,
-    xpGoalToday, coinsGoalToday, streak,
-    dayTasks, session, skills,
-    completePomodoro, startPomodoro, tickTimer, endSession,
-    resetDayIfNeeded,
-  } = useAppStore();
+  name, title, level, todayXP, todayCoins,
+  xpGoalToday, coinsGoalToday, streak,
+  dayTasks, session,
+  completePomodoro, startPomodoro, tickTimer, endSession,
+  resetDayIfNeeded, generateDayTasks,
+} = useAppStore();
 
   const [activeTask, setActiveTask] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     resetDayIfNeeded();
+    // Generate tasks on first load if none exist yet
+    if (dayTasks.length === 0) {
+      generateDayTasks();
+    }
   }, []);
 
   useEffect(() => {
@@ -53,7 +57,6 @@ export default function DashboardPage() {
 
   const completedTasks = dayTasks.filter((t) => t.completed).length;
   const xpPct = Math.min((todayXP / xpGoalToday) * 100, 100);
-  const coinsPct = Math.min((todayCoins / coinsGoalToday) * 100, 100);
 
   return (
     <div className={styles.page}>
@@ -86,7 +89,11 @@ export default function DashboardPage() {
       {session.active && (
         <div className={styles.timerCard}>
           <div className={styles.timerPhase}>
-            {session.phase === "work" ? "🍅 Помодоро" : session.phase === "short-break" ? "☕ Короткий перерыв" : "🌿 Длинный перерыв"}
+            {session.phase === "work"
+              ? "🍅 Помодоро"
+              : session.phase === "short-break"
+              ? "☕ Короткий перерыв"
+              : "🌿 Длинный перерыв"}
           </div>
           <div className={styles.timerDisplay}>{formatTime(session.secondsLeft)}</div>
           <div className={styles.timerCycles}>Циклов завершено: {session.completedCycles}</div>
@@ -96,7 +103,7 @@ export default function DashboardPage() {
                 className={styles.btnComplete}
                 onClick={() => completePomodoro(session.taskId!, session.pomodoroId!)}
               >
-                ✓ Завершить и получить XP
+                ✔ Завершить и получить XP
               </button>
             )}
             <button className={styles.btnStop} onClick={endSession}>✕ Стоп</button>
@@ -106,19 +113,25 @@ export default function DashboardPage() {
 
       {/* TASKS */}
       <div className={styles.tasks}>
-        {dayTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            color={SKILL_COLORS[task.skillId] ?? "#6d28d9"}
-            expanded={activeTask === task.id}
-            onToggle={() => setActiveTask(activeTask === task.id ? null : task.id)}
-            onStart={startPomodoro}
-            onComplete={completePomodoro}
-            sessionActive={session.active}
-            sessionPomoId={session.pomodoroId}
-          />
-        ))}
+        {dayTasks.length === 0 ? (
+          <div className={styles.xpMeta}>
+            <span>Все задачи выполнены или навыки не найдены.</span>
+          </div>
+        ) : (
+          dayTasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              color={SKILL_COLORS[task.skillId] ?? "#1e1b4b"}
+              expanded={activeTask === task.id}
+              onToggle={() => setActiveTask(activeTask === task.id ? null : task.id)}
+              onStart={startPomodoro}
+              onComplete={completePomodoro}
+              sessionActive={session.active}
+              sessionPomoId={session.pomodoroId}
+            />
+          ))
+        )}
       </div>
     </div>
   );
@@ -138,15 +151,23 @@ function TaskCard({
 }) {
   const done = task.pomodoros.filter((p) => p.completed).length;
   const total = task.pomodoros.length;
-  const pct = (done / total) * 100;
+  const pct = total > 0 ? (done / total) * 100 : 0;
 
   return (
-    <div className={`${styles.taskCard} ${task.completed ? styles.taskDone : ""}`}
-      style={{ borderLeftColor: color }}>
+    <div
+      className={`${styles.taskCard} ${task.completed ? styles.taskDone : ""}`}
+      style={{ borderLeftColor: color }}
+    >
       <div className={styles.taskHeader} onClick={onToggle}>
         <div className={styles.taskLeft}>
-          <div className={styles.taskCheck} style={{ borderColor: color, background: task.completed ? color : "transparent" }}>
-            {task.completed && <span>✓</span>}
+          <div
+            className={styles.taskCheck}
+            style={{
+              borderColor: color,
+              background: task.completed ? color : "transparent",
+            }}
+          >
+            {task.completed && <span>✔</span>}
           </div>
           <div>
             <div className={styles.taskTitle}>{task.title}</div>
@@ -157,7 +178,10 @@ function TaskCard({
         </div>
         <div className={styles.taskRight}>
           <div className={styles.miniBar}>
-            <div className={styles.miniFill} style={{ width: `${pct}%`, background: color }} />
+            <div
+              className={styles.miniFill}
+              style={{ width: `${pct}%`, background: color }}
+            />
           </div>
           <span className={styles.chevron}>{expanded ? "▲" : "▼"}</span>
         </div>
@@ -197,14 +221,27 @@ function PomodoroRow({
   isCurrentSession: boolean;
 }) {
   return (
-    <div className={`${styles.pomoRow} ${pomo.completed ? styles.pomoCompleted : ""} ${isCurrentSession ? styles.pomoActive : ""}`}>
-      <div className={styles.pomoNum} style={{ background: pomo.completed ? color : "transparent", borderColor: color }}>
-        {pomo.completed ? "✓" : index + 1}
+    <div
+      className={`${styles.pomoRow} ${pomo.completed ? styles.pomoCompleted : ""} ${isCurrentSession ? styles.pomoActive : ""}`}
+    >
+      <div
+        className={styles.pomoNum}
+        style={{
+          background: pomo.completed ? color : "transparent",
+          borderColor: color,
+        }}
+      >
+        {pomo.completed ? "✔" : index + 1}
       </div>
       <div className={styles.pomoContent}>
         <p className={styles.pomoInstruction}>{pomo.instruction}</p>
         {pomo.resource && (
-          <a className={styles.pomoResource} href={pomo.resourceUrl} target="_blank" rel="noreferrer">
+          <a
+            className={styles.pomoResource}
+            href={pomo.resourceUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
             ↗ {pomo.resource}
           </a>
         )}
@@ -215,12 +252,16 @@ function PomodoroRow({
       {!pomo.completed && (
         <div className={styles.pomoActions}>
           {!sessionActive && (
-            <button className={styles.btnStart} style={{ background: color }} onClick={() => onStart(taskId, pomo.id)}>
+            <button
+              className={styles.btnStart}
+              style={{ background: color }}
+              onClick={() => onStart(taskId, pomo.id)}
+            >
               ▶ Старт
             </button>
           )}
           <button className={styles.btnDone} onClick={() => onComplete(taskId, pomo.id)}>
-            ✓
+            ✔
           </button>
         </div>
       )}

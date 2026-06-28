@@ -2,9 +2,27 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal } from "../types";
 import { INITIAL_SKILLS } from "../content";
-// Re-export for backward compatibility — SkillTreePage, DashboardPage, SettingsPage не трогаем
+
+// Re-export for backward compatibility
 export type { Skill, SkillProgress, SkillDefinition, Pomodoro, DayTask, PomodoroSession, Goal };
 
+// Skill definitions — static learning content
+import { sqlSkill }     from "../app/engines/learning/data/skills/sql.skill";
+import { restApiSkill } from "../app/engines/learning/data/skills/rest-api.skill";
+import { englishSkill } from "../app/engines/learning/data/skills/english.skill";
+import { bpmnSkill }    from "../app/engines/learning/data/skills/bpmn.skill";
+import { jiraSkill }    from "../app/engines/learning/data/skills/jira.skill";
+
+// Adapter and engine
+import { buildUserProgress } from "../app/engines/learning/adapters/buildUserProgress";
+import { buildDayTasks }     from "../app/engines/learning/engine/LearningEngine";
+
+// Static registry — ordered by default priority
+const SKILL_DEFINITIONS = [sqlSkill, restApiSkill, englishSkill, bpmnSkill, jiraSkill];
+
+// ---------------------------------------------------------------------------
+// AppState
+// ---------------------------------------------------------------------------
 
 interface AppState {
   name: string;
@@ -31,172 +49,29 @@ interface AppState {
   endSession: () => void;
   addSkillXP: (skillId: string, xp: number) => void;
   resetDayIfNeeded: () => void;
+  generateDayTasks: () => void;
   updateGoal: (category: string, patch: Partial<Goal>) => void;
   addGoal: (category: string, goal: Goal) => void;
   removeGoal: (category: string) => void;
 }
 
+// ---------------------------------------------------------------------------
+// Initial goals
+// ---------------------------------------------------------------------------
 
 const INITIAL_GOALS: Record<string, Goal> = {
   sql:        { category: "sql",       dailyMinutes: 75,  xpPerMinute: 2,   priority: 1 },
   "rest-api": { category: "rest-api",  dailyMinutes: 50,  xpPerMinute: 2,   priority: 1 },
   english:    { category: "english",   dailyMinutes: 100, xpPerMinute: 1.5, priority: 1 },
-  linkedin:   { category: "linkedin",  dailyMinutes: 25,  xpPerMinute: 3,   priority: 2 },
   bpmn:       { category: "bpmn",      dailyMinutes: 50,  xpPerMinute: 2,   priority: 2 },
   jira:       { category: "jira",      dailyMinutes: 25,  xpPerMinute: 2,   priority: 3 },
 };
 
-const TODAY_TASKS: DayTask[] = [
-  {
-    id: "task-sql",
-    skillId: "sql",
-    title: "SQL: SELECT / WHERE / ORDER BY",
-    xpReward: 150,
-    coinsReward: 30,
-    completed: false,
-    pomodoros: [
-      {
-        id: "sql-p1",
-        duration: 25,
-        instruction:
-          "Пройди урок SELECT / WHERE на sqlbolt.com (Lessons 1–4). Напиши 5 своих запросов в редакторе.",
-        resource: "SQLBolt — Lessons 1–4",
-        resourceUrl: "https://sqlbolt.com",
-        xpReward: 50,
-        coinsReward: 10,
-        completed: false,
-      },
-      {
-        id: "sql-p2",
-        duration: 25,
-        instruction:
-          "ORDER BY + LIMIT на sqlbolt.com (Lessons 5–6). Затем 5 запросов на mode.com/sql-tutorial.",
-        resource: "Mode SQL Tutorial",
-        resourceUrl: "https://mode.com/sql-tutorial",
-        xpReward: 50,
-        coinsReward: 10,
-        completed: false,
-      },
-      {
-        id: "sql-p3",
-        duration: 25,
-        instruction:
-          "Без подсказок объясни вслух (запиши голос или напиши): разница между WHERE / ORDER BY / LIMIT. Потом проверь себя.",
-        xpReward: 50,
-        coinsReward: 10,
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: "task-api",
-    skillId: "rest-api",
-    title: "REST / API: HTTP basics",
-    xpReward: 120,
-    coinsReward: 24,
-    completed: false,
-    pomodoros: [
-      {
-        id: "api-p1",
-        duration: 25,
-        instruction:
-          "Смотри: 'HTTP Crash Course' — Traversy Media (YouTube). Выпиши методы GET/POST/PUT/DELETE и коды 200/201/400/401/404/500.",
-        resource: "Traversy Media — HTTP Crash Course",
-        resourceUrl: "https://youtube.com/watch?v=iYM2zFP3Zn0",
-        xpReward: 60,
-        coinsReward: 12,
-        completed: false,
-      },
-      {
-        id: "api-p2",
-        duration: 25,
-        instruction:
-          "Открой Postman. Сделай 3 запроса к публичному API: GET https://jsonplaceholder.typicode.com/posts. POST /posts. GET /users/1.",
-        resource: "JSONPlaceholder (публичный API)",
-        resourceUrl: "https://jsonplaceholder.typicode.com",
-        xpReward: 60,
-        coinsReward: 12,
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: "task-english",
-    skillId: "english",
-    title: "English: ежедневная рутина (2h)",
-    xpReward: 180,
-    coinsReward: 36,
-    completed: false,
-    pomodoros: [
-      {
-        id: "en-p1",
-        duration: 25,
-        instruction:
-          "Comprehensible input B1: смотри 'English with Lucy' или 'BBC Learning English' на YouTube. Без субтитров. Напиши 3 вопроса по содержанию.",
-        resource: "English with Lucy (YouTube)",
-        resourceUrl: "https://youtube.com/@EnglishwithLucy",
-        xpReward: 45,
-        coinsReward: 9,
-        completed: false,
-      },
-      {
-        id: "en-p2",
-        duration: 25,
-        instruction:
-          "Shadowing A2/B1: выбери любой эпизод 'Culips ESL Podcast'. Слушай 2 мин → повтори → запиши голос. Сравни произношение.",
-        resource: "Culips ESL Podcast",
-        resourceUrl: "https://culips.com",
-        xpReward: 45,
-        coinsReward: 9,
-        completed: false,
-      },
-      {
-        id: "en-p3",
-        duration: 25,
-        instruction:
-          "Диктант: включи 'VOA Learning English' (Special English). Пиши текст на слух. Цель: менее 10 ошибок.",
-        resource: "VOA Learning English",
-        resourceUrl: "https://learningenglish.voanews.com",
-        xpReward: 45,
-        coinsReward: 9,
-        completed: false,
-      },
-      {
-        id: "en-p4",
-        duration: 25,
-        instruction:
-          "Learning Log: напиши 5–10 предложений на английском — что изучил сегодня по SQL и API. Используй новые слова из диктанта.",
-        xpReward: 45,
-        coinsReward: 9,
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: "task-linkedin",
-    skillId: "linkedin",
-    title: "LinkedIn: аудит профиля",
-    xpReward: 90,
-    coinsReward: 18,
-    completed: false,
-    pomodoros: [
-      {
-        id: "li-p1",
-        duration: 25,
-        instruction:
-          "Найди 5 профилей 'Junior System Analyst' в LinkedIn (фильтр: США). Выпиши: 3 идеи для headline, 2 идеи для About, какие навыки они указывают.",
-        resource: "LinkedIn Search",
-        resourceUrl:
-          "https://linkedin.com/search/results/people/?keywords=junior+system+analyst",
-        xpReward: 90,
-        coinsReward: 18,
-        completed: false,
-      },
-    ],
-  },
-];
-
 const todayISO = () => new Date().toISOString().slice(0, 10);
+
+// ---------------------------------------------------------------------------
+// Store
+// ---------------------------------------------------------------------------
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -213,7 +88,7 @@ export const useAppStore = create<AppState>()(
       xpGoalToday: 540,
       coinsGoalToday: 108,
       skills: INITIAL_SKILLS,
-      dayTasks: TODAY_TASKS,
+      dayTasks: [],
       lastResetDate: todayISO(),
       goals: INITIAL_GOALS,
       session: {
@@ -225,22 +100,58 @@ export const useAppStore = create<AppState>()(
         completedCycles: 0,
       },
 
+      // ---------------------------------------------------------------
+      // generateDayTasks
+      // Builds today's tasks from skill definitions + current progress.
+      // Called on app start and after day reset.
+      // ---------------------------------------------------------------
+      generateDayTasks: () => {
+        const state = get();
+        const userProgress = buildUserProgress(
+          state.skills,
+          state.totalXP,
+          state.totalCoins,
+        );
+        const tasks = buildDayTasks(
+          SKILL_DEFINITIONS,
+          userProgress,
+          state.goals,
+          5,
+        );
+        set({ dayTasks: tasks });
+      },
+
+      // ---------------------------------------------------------------
+      // resetDayIfNeeded
+      // Resets daily counters and regenerates tasks on a new day.
+      // ---------------------------------------------------------------
       resetDayIfNeeded: () => {
         const today = todayISO();
         if (get().lastResetDate !== today) {
+          const state = get();
+          const userProgress = buildUserProgress(
+            state.skills,
+            state.totalXP,
+            state.totalCoins,
+          );
+          const tasks = buildDayTasks(
+            SKILL_DEFINITIONS,
+            userProgress,
+            state.goals,
+            5,
+          );
           set({
             todayXP: 0,
             todayCoins: 0,
             lastResetDate: today,
-            dayTasks: TODAY_TASKS.map((t) => ({
-              ...t,
-              completed: false,
-              pomodoros: t.pomodoros.map((p) => ({ ...p, completed: false })),
-            })),
+            dayTasks: tasks,
           });
         }
       },
 
+      // ---------------------------------------------------------------
+      // startPomodoro
+      // ---------------------------------------------------------------
       startPomodoro: (taskId, pomodoroId) => {
         const task = get().dayTasks.find((t) => t.id === taskId);
         const pomo = task?.pomodoros.find((p) => p.id === pomodoroId);
@@ -257,6 +168,9 @@ export const useAppStore = create<AppState>()(
         });
       },
 
+      // ---------------------------------------------------------------
+      // tickTimer
+      // ---------------------------------------------------------------
       tickTimer: () => {
         const s = get().session;
         if (!s.active) return;
@@ -284,6 +198,9 @@ export const useAppStore = create<AppState>()(
         }
       },
 
+      // ---------------------------------------------------------------
+      // skipToBreak
+      // ---------------------------------------------------------------
       skipToBreak: () => {
         const s = get().session;
         const cycles = s.completedCycles + 1;
@@ -298,12 +215,20 @@ export const useAppStore = create<AppState>()(
         }));
       },
 
+      // ---------------------------------------------------------------
+      // endSession
+      // ---------------------------------------------------------------
       endSession: () => {
         set((state) => ({
           session: { ...state.session, active: false, taskId: null, pomodoroId: null },
         }));
       },
 
+      // ---------------------------------------------------------------
+      // completePomodoro
+      // Marks pomodoro done, grants XP + coins, updates skill progress,
+      // then regenerates day tasks to reflect new progress.
+      // ---------------------------------------------------------------
       completePomodoro: (taskId, pomodoroId) => {
         const state = get();
         const taskIdx = state.dayTasks.findIndex((t) => t.id === taskId);
@@ -314,12 +239,13 @@ export const useAppStore = create<AppState>()(
 
         const pomo = task.pomodoros[pomoIdx];
         const newPomodoros = task.pomodoros.map((p, i) =>
-          i === pomoIdx ? { ...p, completed: true } : p
+          i === pomoIdx ? { ...p, completed: true } : p,
         );
         const allDone = newPomodoros.every((p) => p.completed);
         const newTasks = state.dayTasks.map((t, i) =>
-          i === taskIdx ? { ...t, pomodoros: newPomodoros, completed: allDone } : t
+          i === taskIdx ? { ...t, pomodoros: newPomodoros, completed: allDone } : t,
         );
+
         const xpGain = pomo.xpReward;
         const coinsGain = pomo.coinsReward;
         const newTotalXP = state.totalXP + xpGain;
@@ -337,6 +263,9 @@ export const useAppStore = create<AppState>()(
         get().addSkillXP(task.skillId, xpGain);
       },
 
+      // ---------------------------------------------------------------
+      // addSkillXP
+      // ---------------------------------------------------------------
       addSkillXP: (skillId, xp) => {
         set((state) => ({
           skills: state.skills.map((s) => {
@@ -359,6 +288,9 @@ export const useAppStore = create<AppState>()(
         }));
       },
 
+      // ---------------------------------------------------------------
+      // Goal management
+      // ---------------------------------------------------------------
       updateGoal: (category, patch) =>
         set((state) => ({
           goals: { ...state.goals, [category]: { ...state.goals[category], ...patch } },
@@ -376,6 +308,6 @@ export const useAppStore = create<AppState>()(
           return { goals: next };
         }),
     }),
-    { name: "ars-os-v1" }
-  )
+    { name: "ars-os-v1" },
+  ),
 );

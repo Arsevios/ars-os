@@ -62,10 +62,8 @@ useEffect(() => {
   };
 }, [session.active]);
 
-const completedTasks = dayTasks.filter((t) => t.completed).length;
-
-const xpPct =
-  xpGoalToday > 0
+  const completedTasks = dayTasks.filter((t) => t.completed).length;
+  const xpPct = xpGoalToday > 0
     ? Math.min((todayXP / xpGoalToday) * 100, 100)
     : 0;
 
